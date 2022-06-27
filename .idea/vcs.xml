@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Alter-Tank" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/platform/BrainTank" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/platform/Tank-AI" vcs="Git" />
+  </component>
+</project>
