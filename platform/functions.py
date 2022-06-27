@@ -13,6 +13,10 @@ def wall_collision(point):
 
 
 def get_color(surface, position):
+    position = list(position)
+    position[0] = min(max(position[0], 0), WIDTH)
+    position[1] = min(max(position[1], 0), HEIGHT)
+    position = tuple(position)
     col = surface.get_at(position)
     return col.r, col.g, col.b
 
