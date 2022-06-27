@@ -40,7 +40,7 @@ def main_loop():
                 main_loop()
 
         screen.blit(MAZE, (0, 0))
-        screen.blit(SCORE_FRAME_2player, (701, 0))
+        screen.blit(SCORE_FRAME_2player, (600, 0))
 
         if help_2player_menu:
             help_2player()
@@ -66,7 +66,7 @@ def main_loop():
 
         for ball in ball_list:
             for tank in tank_list:
-                if check_boom(ball, tank) and tank.get_exist():
+                if check_boom(ball, tank) and tank.get_exist() and not ball.to_kill:
                     tank.is_exist = 0
                     play_sound(EXPLOSION_SOUND)
                     tank.destroy()

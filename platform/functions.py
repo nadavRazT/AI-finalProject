@@ -40,11 +40,11 @@ def draw_text(surf, text, color, size, location):
 
 def draw_score(color ,score):
     if color == "Red":
-        location = (991,100)
+        location = (849,86)
     if color == "Green" :
-        location = (991,275)
+        location = (849,236)
     if color == "Blue" :
-        location = (991,450)
+        location = (849,386)
     draw_text(screen, score, BLACK, 60, location)
 
 def help_2player():

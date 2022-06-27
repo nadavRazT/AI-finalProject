@@ -130,16 +130,13 @@ class ATank:
             return 100
 
     def shoot(self):
-
-        if len(self.__balls) < BALL_COUNT:
-            shooting_ball = Ball(self.__xPos, self.__yPos, self.__angle)
-            self.__balls.append(shooting_ball)
+        shooting_ball = Ball(self.__xPos, self.__yPos, self.__angle)
+        self.__balls.append(shooting_ball)
 
     def check_balls(self):
 
-        now = time.time()
         for ball in self.__balls:
-            if now - ball.get_time() > BALL_LIFE:
+            if ball.to_kill:
                 self.__balls.remove(ball)
                 # print(self.__balls)
 

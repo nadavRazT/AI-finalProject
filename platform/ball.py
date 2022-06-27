@@ -16,6 +16,7 @@ class Ball:
         self.__points = {}
         self.horizontal_neg = 1
         self.vertical_neg = 1
+        self.to_kill = False
 
     def go(self, value):
 
@@ -32,8 +33,10 @@ class Ball:
 
         if wall_collision(self.__points['right']) or wall_collision(self.__points['left']):
             self.horizontal_neg *= -1
+            self.to_kill = True
         if wall_collision(self.__points['bottom']) or wall_collision(self.__points['top']):
             self.vertical_neg *= -1
+            self.to_kill = True
 
         self.horizontal_move = self.horizontal_neg * -value*math.cos(angle_radian)
         self.vertical_move = self.vertical_neg * value*math.sin(angle_radian)
