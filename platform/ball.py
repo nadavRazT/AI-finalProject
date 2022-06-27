@@ -1,4 +1,4 @@
-
+from game_setting import HEIGHT, WIDTH
 from functions import *
 
 
@@ -24,10 +24,10 @@ class Ball:
         y = int(self.__yPos)
 
         self.__points ={
-                        "right": (x+BALL_RADIUS, y+0),
-                        "top": (x+0, y+BALL_RADIUS),
-                        "left": (x-BALL_RADIUS, y-0),
-                        "bottom": (x-0, y-BALL_RADIUS)}
+                        "right": (min(x+BALL_RADIUS, WIDTH), min(y+0, HEIGHT)),
+                        "top": (min(x+0, WIDTH), min(y+BALL_RADIUS, HEIGHT)),
+                        "left": (max(x-BALL_RADIUS, 0), min(y-0, HEIGHT)),
+                        "bottom": (min(x-0, WIDTH), max(y-BALL_RADIUS, 0))}
 
         angle_radian = (self.__angle*(math.pi/180))
 
