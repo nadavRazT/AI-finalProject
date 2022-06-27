@@ -95,7 +95,10 @@ def main_menu():
 
     while True:
         ev = pygame.event.poll()
+        while ev.key != pygame.K_SPACE:
+            i = 1
         if ev.type == pygame.KEYDOWN:
+            print(pygame.key.name(ev.key))
             if ev.key == pygame.K_2:
                 import AlterTank_2player
             if ev.key == pygame.K_3:
