@@ -1,4 +1,8 @@
+import pygame
+
 from game_setting import *
+from display import draw_score, draw_text
+
 
 ##################
 # Game Functions #
@@ -14,45 +18,38 @@ def wall_collision(point):
 
 def get_color(surface, position):
     position = list(position)
-    position[0] = min(max(position[0], 0), WIDTH)
-    position[1] = min(max(position[1], 0), HEIGHT)
+    position[0] = min(max(position[0], 0), HEIGHT - 1)
+    position[1] = min(max(position[1], 0), WIDTH - 1)
     position = tuple(position)
     col = surface.get_at(position)
     return col.r, col.g, col.b
 
 
+def check_victory(tanks):
+    team_list = set()
+    for tank in tanks:
+        if tank.get_exist():
+            team_list.add(tank.get_team())
+    if len(team_list) > 1:
+        return False
+    return True
+
 def check_boom(ball, tank):
     passing_time = time.time() - ball.get_time()
-    if passing_time > 0.3:
-        if ((abs(ball.get_center_location()[0] - tank.get_location()[0]))**2 + (abs(ball.get_center_location()[1] - tank.get_location()[1]))**2)**0.5 <= BALL_RADIUS + TANK_RADIUS:
+    if passing_time > PASSING_TIME:
+        if ((abs(ball.get_center_location()[0] - tank.get_location()[0])) ** 2 + (
+        abs(ball.get_center_location()[1] - tank.get_location()[1])) ** 2) ** 0.5 <= BALL_RADIUS + TANK_RADIUS:
             return True
     return False
 
 
 def play_sound(sound):
-
     pygame.mixer.music.load(sound)
     pygame.mixer.music.play(0)
 
-def draw_text(surf, text, color, size, location):
-    ## selecting a cross platform font to display the score
-    font = pygame.font.Font('freesansbold.ttf', size)
-    text_surface = font.render(text, True, color)       ## True denotes the font to be anti-aliased
-    text_rect = text_surface.get_rect()
-    text_rect.midtop = location
-    surf.blit(text_surface, text_rect)
 
-def draw_score(color ,score):
-    if color == "Red":
-        location = (849,86)
-    if color == "Green" :
-        location = (849,236)
-    if color == "Blue" :
-        location = (849,386)
-    draw_text(screen, score, BLACK, 60, location)
-
-def help_2player():
-    screen.blit(HELP_2PLAYER, (0,0))
+def help_player(n_players):
+    screen.blit(HELP_IMAGES[n_players], (0, 0))
     pygame.display.update()
 
     while True:
@@ -61,68 +58,18 @@ def help_2player():
             if ev.key == pygame.K_RETURN:
                 break
         elif ev.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+            pygame.quit()
+            quit()
         else:
-            draw_text(screen, "Press [ENTER] To Begin", BLACK, 30, (WIDTH/2, (HEIGHT/2)+200))
+            draw_text(screen, "Press [ENTER] To Begin", BLACK, 30, (WIDTH / 2, (HEIGHT / 2) + 200))
             pygame.display.update()
 
     screen.fill(BLACK)
-    draw_text(screen, "GET READY!", WHITE, 40, (WIDTH/2, HEIGHT/2))
-    pygame.display.update()
-
-def help_3player():
-
-        screen.blit(HELP_3PLAYER, (0,0))
-        pygame.display.update()
-
-        while True:
-            ev = pygame.event.poll()
-            if ev.type == pygame.KEYDOWN:
-                if ev.key == pygame.K_RETURN:
-                    break
-            elif ev.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-            else:
-                draw_text(screen, "Press [ENTER] To Begin", BLACK, 30, (WIDTH/2, (HEIGHT/2)+200))
-                pygame.display.update()
-
-        screen.fill(BLACK)
-        draw_text(screen, "GET READY!", WHITE, 40, (WIDTH/2, HEIGHT/2))
-        pygame.display.update()
-
-def main_menu():
-
-    screen.blit(START_MENU_IMG, (0,0))
-    pygame.display.update()
-
-    while True:
-        ev = pygame.event.poll()
-        while ev.key != pygame.K_SPACE:
-            i = 1
-        if ev.type == pygame.KEYDOWN:
-            print(pygame.key.name(ev.key))
-            if ev.key == pygame.K_2:
-                import AlterTank_2player
-            if ev.key == pygame.K_3:
-                import AlterTank_3player
-            elif ev.key == pygame.K_q:
-                pygame.quit()
-                quit()
-        elif ev.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-        else:
-            draw_text(screen, "Press [2] To Begin 2 player", BLACK, 40, (WIDTH/2, HEIGHT/2))
-            draw_text(screen, "Press [3] To Begin 3 player", BLACK, 40, (WIDTH/2, (HEIGHT/2)+50))
-            draw_text(screen, "press [Q] To Quit",BLACK, 40, (WIDTH/2, (HEIGHT/2)+100))
-            pygame.display.update()
+    draw_text(screen, "GET READY!", WHITE, 40, (WIDTH / 2, HEIGHT / 2))
     pygame.display.update()
 
 
 def get_possible_positions(number):
-
     final_random_positions = []
     map_positions = list(TANK_POSSIBLE_POSITIONS)
 
@@ -130,14 +77,8 @@ def get_possible_positions(number):
         map_positions[i] = list(map_positions[i])
 
     for i in range(number):
-        random_index = random.randint(0, len(map_positions)-1)
+        random_index = random.randint(0, len(map_positions) - 1)
         final_random_positions.append(map_positions[random_index])
         map_positions.pop(random_index)
 
     return final_random_positions
-
-
-def reset_map():
-    map_index = random.randint(1, NUMBER_OF_MAP)
-    return pygame.image.load(MAZE_TEXT.format(str(map_index)))
-

@@ -1,10 +1,12 @@
-
 from ball import *
+from game_setting import *
+import numpy as np
+
 
 class ATank:
-
-    def __init__(self, color, x_pos, y_pos, angle, tank_image, controls):
-
+    def __init__(self, color, x_pos, y_pos, angle, tank_image, controls, team):
+        self.__i_xpos = x_pos
+        self.__i_ypos = y_pos
         self.__xPos = x_pos
         self.__yPos = y_pos
         self.__orgImage = tank_image
@@ -21,10 +23,16 @@ class ATank:
         self.move_value = 0
         self.is_exist = 1
         self.color = color
-        self.score = 0
+        self.team = team
 
     def __str__(self):
         return self.color
+
+    def get_team(self):
+        return self.team
+
+    def get_score(self):
+        return self.team.get_score()
 
     def rotate(self, degree):
 
@@ -38,35 +46,35 @@ class ATank:
     def go(self, value):
 
         self.__points = {
-            'right': [(self.__rect.center[0]+14, self.__rect.center[1]-14),
-                      (self.__rect.center[0]+18, self.__rect.center[1]-7),
-                      (self.__rect.center[0]+20, self.__rect.center[1]+0),
-                      (self.__rect.center[0]+18, self.__rect.center[1]+7),
-                      (self.__rect.center[0]+14, self.__rect.center[1]+14)],
-            'top': [(self.__rect.center[0]+14, self.__rect.center[1]+14),
-                     (self.__rect.center[0]+7, self.__rect.center[1]+18),
-                     (self.__rect.center[0]+0, self.__rect.center[1]+20),
-                     (self.__rect.center[0]-7, self.__rect.center[1]+18),
-                     (self.__rect.center[0]-14, self.__rect.center[1]+14)],
-            'left': [(self.__rect.center[0]-14, self.__rect.center[1]+14),
-                     (self.__rect.center[0]-18, self.__rect.center[1]+7),
-                     (self.__rect.center[0]-20, self.__rect.center[1]+0),
-                     (self.__rect.center[0]-18, self.__rect.center[1]-7),
-                     (self.__rect.center[0]-14, self.__rect.center[1]-14)],
-            'bottom': [(self.__rect.center[0]-14, self.__rect.center[1]-14),
-                       (self.__rect.center[0]-7, self.__rect.center[1]-18),
-                       (self.__rect.center[0]-0, self.__rect.center[1]-20),
-                       (self.__rect.center[0]+7, self.__rect.center[1]-18),
-                       (self.__rect.center[0]+14, self.__rect.center[1]-14)]}
+            'right': [(self.__rect.center[0] + 14, self.__rect.center[1] - 14),
+                      (self.__rect.center[0] + 18, self.__rect.center[1] - 7),
+                      (self.__rect.center[0] + 20, self.__rect.center[1] + 0),
+                      (self.__rect.center[0] + 18, self.__rect.center[1] + 7),
+                      (self.__rect.center[0] + 14, self.__rect.center[1] + 14)],
+            'top': [(self.__rect.center[0] + 14, self.__rect.center[1] + 14),
+                    (self.__rect.center[0] + 7, self.__rect.center[1] + 18),
+                    (self.__rect.center[0] + 0, self.__rect.center[1] + 20),
+                    (self.__rect.center[0] - 7, self.__rect.center[1] + 18),
+                    (self.__rect.center[0] - 14, self.__rect.center[1] + 14)],
+            'left': [(self.__rect.center[0] - 14, self.__rect.center[1] + 14),
+                     (self.__rect.center[0] - 18, self.__rect.center[1] + 7),
+                     (self.__rect.center[0] - 20, self.__rect.center[1] + 0),
+                     (self.__rect.center[0] - 18, self.__rect.center[1] - 7),
+                     (self.__rect.center[0] - 14, self.__rect.center[1] - 14)],
+            'bottom': [(self.__rect.center[0] - 14, self.__rect.center[1] - 14),
+                       (self.__rect.center[0] - 7, self.__rect.center[1] - 18),
+                       (self.__rect.center[0] - 0, self.__rect.center[1] - 20),
+                       (self.__rect.center[0] + 7, self.__rect.center[1] - 18),
+                       (self.__rect.center[0] + 14, self.__rect.center[1] - 14)]}
 
-        angle_radian = (self.__angle*(math.pi/180))
+        angle_radian = (self.__angle * (math.pi / 180))
 
-        self.horizontal_move = -value*math.cos(angle_radian)
-        self.vertical_move = value*math.sin(angle_radian)
+        self.horizontal_move = -value * math.cos(angle_radian)
+        self.vertical_move = value * math.sin(angle_radian)
         wall_calculation_horizontal = self.calculate_horizontal(self.horizontal_move)
         wall_calculation_vertical = self.calculate_vertical(self.vertical_move)
 
-        if wall_calculation_horizontal != 100 :
+        if wall_calculation_horizontal != 100:
             self.horizontal_move = wall_calculation_horizontal
 
         if wall_calculation_vertical != 100:
@@ -75,6 +83,10 @@ class ATank:
         self.__xPos += self.horizontal_move
         self.__yPos += self.vertical_move
         self.__rect.center = (self.__xPos, self.__yPos)
+
+    def add_score(self):
+        self.team.add_score()
+        return
 
     def move_control(self):
 
@@ -183,3 +195,48 @@ class ATank:
 
     def get_points(self):
         return self.__points
+
+
+class Team:
+    def __init__(self, color, n_tanks):
+        self.score = 0
+        self.n_tanks = n_tanks
+
+    def get_score(self):
+        return self.score
+
+    def add_score(self):
+        self.score += 1
+
+    def get_n_tanks(self):
+        return self.n_tanks
+
+    def kill_tank(self):
+        self.n_tanks -= 1
+
+
+class TankFactory:
+    def __init__(self, n_manual, teams):
+        """
+        n_tanks - number of tanks
+        n_manual - number of manual agents
+        teams - number of teams and devision
+        """
+        positions = get_possible_positions(np.sum(np.array(teams)))
+        self.tank_list = []
+        i = 0
+        for team_num in range(len(teams)):
+            n = teams[team_num]
+            team_color = group_colors[team_num]
+            team = Team(team_color,n)
+            for _ in range(n):
+                if i < n_manual:
+                    self.tank_list.append(ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color],
+                                      MANUAL_CONTROL_TANK[i], team))
+                else:
+                    self.tank_list.append(
+                        ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color], AI_CONTROL, team))
+                i += 1
+
+    def get_tanks(self):
+        return self.tank_list

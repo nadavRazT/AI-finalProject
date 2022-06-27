@@ -20,7 +20,7 @@ NUMBER_OF_MAP = 1
 NUMBER_OF_POSITIONS = 7
 MAP_NUMBER = random.randint(1, NUMBER_OF_MAP)
 MAZE_TEXT = 'maps/map0{0}.jpg'
-#MAZE = pygame.image.load(MAZE_TEXT.format(str(MAP_NUMBER)))
+# MAZE = pygame.image.load(MAZE_TEXT.format(str(MAP_NUMBER)))
 MAZE = pygame.image.load("maps/mapempty.jpg")
 TANK_POSSIBLE_POSITIONS = ((50, 50),
                            (390, 125),
@@ -54,9 +54,10 @@ EXPLOSION_SOUND = 'musics/explosion.mp3'
 # Game Controllers #
 ####################
 
-CONTROL_TANK1 = ('up', 'down', 'right', 'left', pygame.K_SLASH)
-CONTROL_TANK2 = ('w', 's', 'd', 'a', pygame.K_TAB)
-CONTROL_TANK3 = ('u', 'j', 'k', 'h', pygame.K_SPACE)
+MANUAL_CONTROL_TANK = [('up', 'down', 'right', 'left', pygame.K_SLASH),
+                       ('w', 's', 'd', 'a', pygame.K_TAB),
+                       ('u', 'j', 'k', 'h', pygame.K_SPACE)]
+AI_CONTROL = ""
 
 #################
 # Game Settings #
@@ -64,17 +65,19 @@ CONTROL_TANK3 = ('u', 'j', 'k', 'h', pygame.K_SPACE)
 
 WIDTH_ORIG, HEIGHT_ORIG = 1171, 700
 WIDTH, HEIGHT = 1004, 600
-GAME_OVER_TIME = 5
+GAME_OVER_TIME = 2
 EXPLOSION_TIME = 2
 GAME_IS_RUNNING = 1
+PASSING_TIME = 0.1
 GAME_TITLE = "Alter Tank"
-ARC_ANGLE = 22.5*(math.pi/180)
+ARC_ANGLE = 22.5 * (math.pi / 180)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BALL_RADIUS = 5
 BALL_LIFE = 10
 BALL_COUNT = 5
 TANK_RADIUS = 20
+group_colors = ["Red", "Green", "Blue", "Yellow"]
 
 ###################
 # speeds Settings #
@@ -96,15 +99,37 @@ clock = pygame.time.Clock()
 # transform im #
 ################
 
+START_MENU_IMG = pygame.transform.scale(START_MENU_IMG, (
+int(WIDTH * START_MENU_IMG.get_width() / WIDTH_ORIG), int(HEIGHT * START_MENU_IMG.get_height() / HEIGHT_ORIG)))
+HELP_3PLAYER = pygame.transform.scale(HELP_3PLAYER, (
 
-START_MENU_IMG = pygame.transform.scale(START_MENU_IMG, (int(WIDTH * START_MENU_IMG.get_width() / WIDTH_ORIG), int(HEIGHT * START_MENU_IMG.get_height() / HEIGHT_ORIG)))
-HELP_3PLAYER = pygame.transform.scale(HELP_3PLAYER, (int(WIDTH * HELP_3PLAYER.get_width() / WIDTH_ORIG), int(HEIGHT * HELP_3PLAYER.get_height() / HEIGHT_ORIG)))
-HELP_2PLAYER = pygame.transform.scale(HELP_2PLAYER, (int(WIDTH * HELP_2PLAYER.get_width() / WIDTH_ORIG), int(HEIGHT * HELP_2PLAYER.get_height() / HEIGHT_ORIG)))
-IMG_TANK1 = pygame.transform.scale(IMG_TANK1, (int(WIDTH * IMG_TANK1.get_width() / WIDTH_ORIG), int(HEIGHT * IMG_TANK1.get_height() / HEIGHT_ORIG)))
-IMG_TANK2 = pygame.transform.scale(IMG_TANK2, (int(WIDTH * IMG_TANK2.get_width() / WIDTH_ORIG), int(HEIGHT * IMG_TANK2.get_height() / HEIGHT_ORIG)))
-IMG_TANK3 = pygame.transform.scale(IMG_TANK3, (int(WIDTH * IMG_TANK3.get_width() / WIDTH_ORIG), int(HEIGHT * IMG_TANK3.get_height() / HEIGHT_ORIG)))
-SCORE_FRAME_2player = pygame.transform.scale(SCORE_FRAME_2player, (int(WIDTH * SCORE_FRAME_2player.get_width() / WIDTH_ORIG), int(HEIGHT * SCORE_FRAME_2player.get_height() / HEIGHT_ORIG)))
-SCORE_FRAME_3player = pygame.transform.scale(SCORE_FRAME_3player, (int(WIDTH * SCORE_FRAME_3player.get_width() / WIDTH_ORIG), int(HEIGHT * SCORE_FRAME_3player.get_height() / HEIGHT_ORIG)))
-IMG_EXPLOSION = pygame.transform.scale(IMG_EXPLOSION, (int(WIDTH * IMG_EXPLOSION.get_width() / WIDTH_ORIG), int(HEIGHT * IMG_EXPLOSION.get_height() / HEIGHT_ORIG)))
-MAZE = pygame.transform.scale(MAZE, (int(WIDTH * MAZE.get_width() / WIDTH_ORIG), int(HEIGHT * MAZE.get_height() / HEIGHT_ORIG)))
+int(WIDTH * HELP_3PLAYER.get_width() / WIDTH_ORIG), int(HEIGHT * HELP_3PLAYER.get_height() / HEIGHT_ORIG)))
+HELP_2PLAYER = pygame.transform.scale(HELP_2PLAYER, (
 
+int(WIDTH * HELP_2PLAYER.get_width() / WIDTH_ORIG), int(HEIGHT * HELP_2PLAYER.get_height() / HEIGHT_ORIG)))
+IMG_TANK1 = pygame.transform.scale(IMG_TANK1, (
+int(WIDTH * IMG_TANK1.get_width() / WIDTH_ORIG), int(HEIGHT * IMG_TANK1.get_height() / HEIGHT_ORIG)))
+
+IMG_TANK2 = pygame.transform.scale(IMG_TANK2, (
+int(WIDTH * IMG_TANK2.get_width() / WIDTH_ORIG), int(HEIGHT * IMG_TANK2.get_height() / HEIGHT_ORIG)))
+
+IMG_TANK3 = pygame.transform.scale(IMG_TANK3, (
+int(WIDTH * IMG_TANK3.get_width() / WIDTH_ORIG), int(HEIGHT * IMG_TANK3.get_height() / HEIGHT_ORIG)))
+
+SCORE_FRAME_2player = pygame.transform.scale(SCORE_FRAME_2player, (
+int(WIDTH * SCORE_FRAME_2player.get_width() / WIDTH_ORIG),
+int(HEIGHT * SCORE_FRAME_2player.get_height() / HEIGHT_ORIG)))
+
+SCORE_FRAME_3player = pygame.transform.scale(SCORE_FRAME_3player, (
+int(WIDTH * SCORE_FRAME_3player.get_width() / WIDTH_ORIG),
+int(HEIGHT * SCORE_FRAME_3player.get_height() / HEIGHT_ORIG)))
+
+IMG_EXPLOSION = pygame.transform.scale(IMG_EXPLOSION, (
+int(WIDTH * IMG_EXPLOSION.get_width() / WIDTH_ORIG), int(HEIGHT * IMG_EXPLOSION.get_height() / HEIGHT_ORIG)))
+
+MAZE = pygame.transform.scale(MAZE, (
+int(WIDTH * MAZE.get_width() / WIDTH_ORIG), int(HEIGHT * MAZE.get_height() / HEIGHT_ORIG)))
+
+TANK_IMAGES = {"Red" :IMG_TANK1,"Green": IMG_TANK2, "Blue": IMG_TANK3}
+SCORE_IMAGES = {2: SCORE_FRAME_2player, 3: SCORE_FRAME_3player}
+HELP_IMAGES = {2: HELP_2PLAYER, 3: HELP_3PLAYER}
