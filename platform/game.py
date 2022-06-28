@@ -31,11 +31,11 @@ class Game:
             agent = self.agents[agentIndex]
             ## generate observation
             # observation = self.state.deepCopy() todo: check if needed
-            action = agent.getAction(self.state)
+            action = agent.get_action(self.state)
             action_list.append(action)
             self.move_history.append(action)
 
-            if agentIndex == numAgents + 1:
+            if agentIndex == numAgents - 1:
                 ## track progress
                 self.num_moves += 1
                 ## update state
