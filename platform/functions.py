@@ -18,8 +18,8 @@ def wall_collision(point):
 
 def get_color(surface, position):
     position = list(position)
-    position[0] = min(max(position[0], 0), HEIGHT - 1)
-    position[1] = min(max(position[1], 0), WIDTH - 1)
+    position[0] = min(max(position[0], 0), MAZE_WIDTH - 1)
+    position[1] = min(max(position[1], 0), MAZE_HEIGHT - 1)
     position = tuple(position)
     col = surface.get_at(position)
     return col.r, col.g, col.b
@@ -45,6 +45,7 @@ def check_boom(ball, tank):
 
 def play_sound(sound):
     pygame.mixer.music.load(sound)
+    pygame.mixer.music.set_volume(VOLUME)
     pygame.mixer.music.play(0)
 
 
@@ -67,6 +68,15 @@ def help_player(n_players):
     screen.fill(BLACK)
     draw_text(screen, "GET READY!", WHITE, 40, (WIDTH / 2, HEIGHT / 2))
     pygame.display.update()
+
+def get_team_positions(teams):
+    locations = []
+    for t in range(len(teams)):
+        team = teams[t]
+        team_pos = TEAM_START_POSITIONS[t]
+        for i in range(team):
+            locations.append((team_pos[0] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2, team_pos[1]+random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2))
+    return locations
 
 
 def get_possible_positions(number):

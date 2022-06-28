@@ -222,7 +222,7 @@ class TankFactory:
         n_manual - number of manual agents
         teams - number of teams and devision
         """
-        positions = get_possible_positions(np.sum(np.array(teams)))
+        positions = get_team_positions(teams)
         self.tank_list = []
         i = 0
         for team_num in range(len(teams)):

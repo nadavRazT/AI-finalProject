@@ -31,6 +31,7 @@ def main_menu():
     pygame.display.update()
     return n
 
+
 def initilize_game(tank_list, n_rounds, n_teams, n_manual):
 
     player_numbers = len(tank_list)
@@ -110,7 +111,6 @@ def main_loop(tank_list ,player_numbers, n_teams):
 
         clock.tick(60)
         pygame.display.update()
-
 
 
 def reset_map():
