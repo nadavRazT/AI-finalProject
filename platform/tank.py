@@ -144,9 +144,6 @@ class ATank:
     def reset_balls(self):
         self.__balls = []
 
-    def build(self):
-        screen.blit(self.__image, self.__rect)
-
     def destroy(self):
         self.is_exist = 0
         self.__death = time.time()
@@ -188,6 +185,7 @@ class ATank:
             actions.append(Action(self, ActionType.BACKWARD))
         if keyboard.is_pressed(self.__controls[4]):
             actions.append(Action(self, ActionType.SHOOT))
+            print("bulbul")
         return actions
 
     def get_action(self, state):

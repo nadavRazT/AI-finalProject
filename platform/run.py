@@ -11,13 +11,13 @@ def run_game(n_rounds, tanks, display, map_index, n_teams):
     for round in range(n_rounds):
         new_game = Game(tanks, display, map_index, n_teams)
         score = new_game.run()
-        print(f"---------------/n"
-              f"result of round {round}:/n "
+        print(f"---------------\n"
+              f"result of round {round}:\n "
               f"{score}")
         scores.append(score)
     total = reduce(reducer, scores, {})
-    print(f"---------------/n"
-          f"total results: /n"
+    print(f"---------------\n"
+          f"total results: \n"
           f"{total}")
     return
 

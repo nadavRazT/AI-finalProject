@@ -83,9 +83,9 @@ EXPLOSION_SOUND = 'musics/explosion.mp3'
 # Game Controllers #
 ####################
 
-MANUAL_CONTROL_TANK = [('up', 'down', 'right', 'left', pygame.K_SLASH),
-                       ('w', 's', 'd', 'a', pygame.K_TAB),
-                       ('u', 'j', 'k', 'h', pygame.K_SPACE)]
+MANUAL_CONTROL_TANK = [('up', 'down', 'right', 'left', "/"),
+                       ('w', 's', 'd', 'a', "Tab"),
+                       ('u', 'j', 'k', 'h', "Space")]
 MAN_CONTROL = "manual"
 NOT_MAN_CONTROL = "not manual"
 AI_CONTROL = "AI"
