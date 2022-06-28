@@ -2,7 +2,7 @@ import pygame
 from game_setting import *
 
 class Display:
-    def __init__(self, n_teams, map_index,display=False):
+    def __init__(self, display, map_index, n_teams):
         self.is_display = display
         self.n_teams = n_teams
         self.map_image = self.reset_map(map_index)
@@ -32,7 +32,7 @@ class Display:
                 location = (849,386)
             if color =="Yellow":
                 location = (849, 536)
-            self.draw_text(self.screen, score, BLACK, 60, location)
+            self.draw_text(self.screen, str(score), BLACK, 60, location)
         return
 
 
@@ -44,9 +44,9 @@ class Display:
             return
         scores = state.get_score()
         self.draw_score(scores)
-        pygame.time.wait(1000)
-        screen.blit(self.map_image, (0, 0))
-        screen.blit(SCORE_IMAGES[self.n_teams], (HEIGHT, 0))
+        # pygame.time.wait(1000)
+        self.screen.blit(self.map_image, (0, 0))
+        self.screen.blit(SCORE_IMAGES[self.n_teams], (HEIGHT, 0))
 
         for tank in state.get_tanks():
             if tank.get_exist():
@@ -57,18 +57,20 @@ class Display:
             for ball in tank.get_balls():
                 self.draw_ball(ball)
 
-        clock.tick(60)
+        self.clock.tick(60)
         pygame.display.update()
 
 
     def play_sound(self, sound):
+        if not self.is_display:
+            return
         pygame.mixer.music.load(sound)
         pygame.mixer.music.set_volume(VOLUME)
         pygame.mixer.music.play(0)
 
 
     def draw_tank(self, tank):
-        screen.blit(tank.get_image(), tank.get_rect())
+        self.screen.blit(tank.get_image(), tank.get_rect())
 
     def draw_ball(self, ball):
         return pygame.draw.circle(self.screen, BLACK, ball.get_center_location(), BALL_RADIUS)

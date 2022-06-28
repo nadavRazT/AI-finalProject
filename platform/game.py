@@ -9,12 +9,12 @@ class Game:
       The Game manages the control flow, soliciting actions from agents.
     """
 
-    def __init__(self, agents, display, map_index):
+    def __init__(self, agents, display, map_index, n_teams):
         pygame.init()
         self.agents = agents
-        self.diaplay = Display(display, map_index)
-        self.init_state = State(self.map, agents)
-        self.state = self.init_state.deepCopy()
+        self.diaplay = Display(display, map_index, n_teams)
+        self.init_state = State(agents)
+        self.state = self.init_state
         self.num_moves = 0
         self.startingIndex = 0
         self.move_history = []
@@ -29,6 +29,11 @@ class Game:
         numAgents = len(self.agents)
         action_list = []
         while not self.isGameOver():
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+
             agent = self.agents[agentIndex]
             ## generate observation
             # observation = self.state.deepCopy() todo: check if needed
@@ -40,9 +45,10 @@ class Game:
                 ## track progress
                 self.num_moves += 1
                 ## update state
-                self.state = self.state.generateSuccessor(action_list)
+                self.state = self.state.generate_successor(action_list, self.diaplay)
                 ## update display
                 self.diaplay.update(self.state)
+                action_list = []
             agentIndex = (agentIndex + 1) % numAgents
 
         return self.state.get_score()

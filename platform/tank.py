@@ -179,18 +179,19 @@ class ATank:
     def get_manual_actions(self):
         actions = []
         if keyboard.is_pressed(self.__controls[3]):
-            actions.append(Action(ActionType.LEFT, self))
+            actions.append(Action(self, ActionType.LEFT))
         if keyboard.is_pressed(self.__controls[2]):
-            actions.append(Action(ActionType.RIGHT, self))
+            actions.append(Action(self,ActionType.RIGHT))
         if keyboard.is_pressed(self.__controls[0]):
-            actions.append(Action(ActionType.FORWARD, self))
+            actions.append(Action(self, ActionType.FORWARD))
         if keyboard.is_pressed(self.__controls[1]):
-            actions.append(Action(ActionType.BACKWARD, self))
+            actions.append(Action(self, ActionType.BACKWARD))
         if keyboard.is_pressed(self.__controls[4]):
-            actions.append(Action(ActionType.SHOOT, self))
+            actions.append(Action(self, ActionType.SHOOT))
+        return actions
 
-    def get_action(self):
-        if self.controller == game_setting.MAN_CONTROL:
+    def get_action(self, state):
+        if self.controller == MAN_CONTROL:
             return self.get_manual_actions()
 
 class Team:
@@ -228,10 +229,10 @@ class TankFactory:
             for _ in range(n):
                 if i < n_manual:
                     self.tank_list.append(ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color],
-                                      MANUAL_CONTROL_TANK[i], team))
+                                      MANUAL_CONTROL_TANK[i], team, MAN_CONTROL))
                 else:
                     self.tank_list.append(
-                        ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color], AI_CONTROL, team))
+                        ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color], AI_CONTROL, team, NOT_MAN_CONTROL))
                 i += 1
 
     def get_tanks(self):

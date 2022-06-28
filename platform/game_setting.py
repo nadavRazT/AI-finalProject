@@ -7,10 +7,10 @@ import keyboard
 import time
 import os
 
-pygame.init()
-pygame.mixer.init()
-
-print(os.getcwd())
+# pygame.init()
+# pygame.mixer.init()
+#
+# print(os.getcwd())
 
 #################
 # Game Settings #
@@ -87,6 +87,8 @@ MANUAL_CONTROL_TANK = [('up', 'down', 'right', 'left', pygame.K_SLASH),
                        ('w', 's', 'd', 'a', pygame.K_TAB),
                        ('u', 'j', 'k', 'h', pygame.K_SPACE)]
 MAN_CONTROL = "manual"
+NOT_MAN_CONTROL = "not manual"
+AI_CONTROL = "AI"
 GENETIC_CONTROL = "genetic"
 DQN_CONTROL= "dqn"
 
@@ -102,9 +104,9 @@ BALL_SPEED = 12
 # Black window #
 ################
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption(GAME_TITLE)
-clock = pygame.time.Clock()
+# screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# pygame.display.set_caption(GAME_TITLE)
+# clock = pygame.time.Clock()
 
 ################
 # transform im #

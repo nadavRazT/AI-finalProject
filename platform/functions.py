@@ -1,7 +1,5 @@
 import pygame
-
 from game_setting import *
-from display import draw_score, draw_text
 
 
 ##################
@@ -50,26 +48,32 @@ def play_sound(sound):
     pygame.mixer.music.play(0)
 
 
-def help_player(n_players):
-    screen.blit(HELP_IMAGES[n_players], (0, 0))
-    pygame.display.update()
+def reducer(accumulator, element):
+    for key, value in element.items():
+        accumulator[key] = accumulator.get(key, 0) + value
+    return accumulator
 
-    while True:
-        ev = pygame.event.poll()
-        if ev.type == pygame.KEYDOWN:
-            if ev.key == pygame.K_RETURN:
-                break
-        elif ev.type == pygame.QUIT:
-            pygame.quit()
-            quit()
-        else:
-            draw_text(screen, "Press [ENTER] To Begin", BLACK, 30, (WIDTH / 2, (HEIGHT / 2) + 200))
-            pygame.display.update()
-
-    screen.fill(BLACK)
-    draw_text(screen, "GET READY!", WHITE, 40, (WIDTH / 2, HEIGHT / 2))
-    pygame.display.update()
-
+#
+# def help_player(n_players):
+#     screen.blit(HELP_IMAGES[n_players], (0, 0))
+#     pygame.display.update()
+#
+#     while True:
+#         ev = pygame.event.poll()
+#         if ev.type == pygame.KEYDOWN:
+#             if ev.key == pygame.K_RETURN:
+#                 break
+#         elif ev.type == pygame.QUIT:
+#             pygame.quit()
+#             quit()
+#         else:
+#             draw_text(screen, "Press [ENTER] To Begin", BLACK, 30, (WIDTH / 2, (HEIGHT / 2) + 200))
+#             pygame.display.update()
+#
+#     screen.fill(BLACK)
+#     draw_text(screen, "GET READY!", WHITE, 40, (WIDTH / 2, HEIGHT / 2))
+#     pygame.display.update()
+#
 
 def get_team_positions(teams):
     locations = []
