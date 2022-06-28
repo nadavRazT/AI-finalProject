@@ -27,13 +27,20 @@ class Display:
         for color, score in scores.items():
             if color == "Red":
                 location = (849,86)
+                self.draw_text(self.screen, str(score), BLACK, 60, location)
+
             if color == "Green" :
                 location = (849,236)
+                self.draw_text(self.screen, str(score), BLACK, 60, location)
+
             if color == "Blue" :
                 location = (849,386)
+                self.draw_text(self.screen, str(score), BLACK, 60, location)
+
             if color =="Yellow":
                 location = (849, 536)
-            self.draw_text(self.screen, str(score), BLACK, 60, location)
+                self.draw_text(self.screen, str(score), BLACK, 60, location)
+
         return
 
 
@@ -44,10 +51,11 @@ class Display:
         if not self.is_display:
             return
         scores = state.get_score()
-        self.draw_score(scores)
-        # pygame.time.wait(1000)
         self.screen.blit(self.map_image, (0, 0))
         self.screen.blit(SCORE_IMAGES[self.n_teams], (HEIGHT, 0))
+        self.draw_score(scores)
+        # pygame.time.wait(1000)
+
 
         for tank in state.get_tanks():
             if tank.get_exist():

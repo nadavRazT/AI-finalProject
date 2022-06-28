@@ -13,7 +13,7 @@ class ATank:
         self.__yPos = y_pos
         self.__orgImage = tank_image
         self.__image = tank_image
-        self.__angle = angle
+        self.__angle = angle + 180
         self.__rect = self.__image.get_rect().move(self.get_location())
         self.__points = {}
         self.__balls = []

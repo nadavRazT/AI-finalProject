@@ -75,7 +75,11 @@ class State:
 
     def get_score(self):
         ret = dict()
-        for color in group_colors:
-            ret[color] = 0
+
+        for tank in self.tank_list:
+            if tank.color not in ret.keys():
+                ret[tank.color] = 0
+            if tank.get_exist():
+                ret[tank.color] += 1
         return ret
 
