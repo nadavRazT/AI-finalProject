@@ -169,6 +169,7 @@ class ATank:
         screen.blit(self.__image, self.__rect)
 
     def destroy(self):
+        self.is_exist = 0
         self.__death = time.time()
         self.__image = IMG_EXPLOSION
 
