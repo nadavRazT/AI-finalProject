@@ -32,20 +32,23 @@ def main_menu():
     return n
 
 
-def initilize_game(tank_list, n_rounds, n_teams, n_manual):
+def initilize_game(tank_list, n_rounds, n_teams, n_manual, display=True):
 
     player_numbers = len(tank_list)
 
     for tank in tank_list:
         tank.reset_balls()
-    help_player(n_manual)
-    pygame.time.wait(1000)
+
+    if display:
+        help_player(n_manual)
+        pygame.time.wait(1000)
+
     for round in range(n_rounds):
-        score = main_loop(tank_list, player_numbers, n_teams)
+        score = main_loop(tank_list, player_numbers, n_teams, display)
     return score
 
 
-def main_loop(tank_list ,player_numbers, n_teams):
+def main_loop(tank_list ,player_numbers, n_teams, display):
 
 
     ending_time = -1
@@ -58,13 +61,15 @@ def main_loop(tank_list ,player_numbers, n_teams):
                 for tank in tank_list:
                     if tank.get_exist():
                         tank.add_score() ## check if number of living or kills
-                    draw_score(tank.color, str(tank.get_score()))
+                    if display:
+                        draw_score(tank.color, str(tank.get_score()))
                     tank.is_exist = 1
                 pygame.time.wait(1000)
                 return {tank.color: tank.get_score() for tank in tank_list}
 
-        screen.blit(MAZE, (0, 0))
-        screen.blit(SCORE_IMAGES[n_teams], (HEIGHT, 0))
+        if display:
+            screen.blit(MAZE, (0, 0))
+            screen.blit(SCORE_IMAGES[n_teams], (HEIGHT, 0))
 
 
         ##########
@@ -73,7 +78,7 @@ def main_loop(tank_list ,player_numbers, n_teams):
 
         ball_list = []
         for event in pygame.event.get():
-
+            print(event.type)
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
@@ -88,7 +93,8 @@ def main_loop(tank_list ,player_numbers, n_teams):
             for tank in tank_list:
                 if check_boom(ball, tank) and tank.get_exist() and not ball.to_kill:
                     tank.is_exist = 0
-                    play_sound(EXPLOSION_SOUND)
+                    if display:
+                        play_sound(EXPLOSION_SOUND)
                     tank.destroy()
                     for shooting_tank in tank_list:
                         shooting_tank.poping_ball(ball)
@@ -107,10 +113,12 @@ def main_loop(tank_list ,player_numbers, n_teams):
             tank.check_balls()
 
         for tank in tank_list:
-            draw_score(tank.color, str(tank.get_score()))
+            if display:
+                draw_score(tank.color, str(tank.get_score()))
 
         clock.tick(60)
-        pygame.display.update()
+        if display:
+            pygame.display.update()
 
 
 def reset_map():

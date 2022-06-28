@@ -34,11 +34,12 @@ def check_victory(tanks):
         return False
     return True
 
+
 def check_boom(ball, tank):
     passing_time = time.time() - ball.get_time()
     if passing_time > PASSING_TIME:
         if ((abs(ball.get_center_location()[0] - tank.get_location()[0])) ** 2 + (
-        abs(ball.get_center_location()[1] - tank.get_location()[1])) ** 2) ** 0.5 <= BALL_RADIUS + TANK_RADIUS:
+                abs(ball.get_center_location()[1] - tank.get_location()[1])) ** 2) ** 0.5 <= BALL_RADIUS + TANK_RADIUS:
             return True
     return False
 
@@ -69,13 +70,15 @@ def help_player(n_players):
     draw_text(screen, "GET READY!", WHITE, 40, (WIDTH / 2, HEIGHT / 2))
     pygame.display.update()
 
+
 def get_team_positions(teams):
     locations = []
     for t in range(len(teams)):
         team = teams[t]
         team_pos = TEAM_START_POSITIONS[t]
         for i in range(team):
-            locations.append((team_pos[0] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2, team_pos[1]+random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2))
+            locations.append((team_pos[0] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2,
+                              team_pos[1] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2))
     return locations
 
 
