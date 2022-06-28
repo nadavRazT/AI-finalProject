@@ -106,7 +106,6 @@ class ATank:
         self.rotate(self.rotate_value)
 
     def shoot_control(self, event):
-
         if event.type == pygame.KEYDOWN:
             if event.key == self.__controls[4] and self.is_exist:
                 self.shoot()
