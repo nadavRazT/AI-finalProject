@@ -1,17 +1,11 @@
 import pygame
 from game_setting import *
 
-
 ##################
 # Game Functions #
 ##################
 
 
-def wall_collision(point):
-    global MAZE
-    pixel_rgb = get_color(MAZE, point)
-    if 85 > pixel_rgb[0] > 70:
-        return True
 
 
 def get_color(surface, position):

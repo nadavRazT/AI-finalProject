@@ -1,5 +1,6 @@
 import pygame
 from game_setting import *
+from functions import get_color
 
 class Display:
     def __init__(self, display, map_index, n_teams):
@@ -76,4 +77,13 @@ class Display:
         return pygame.draw.circle(self.screen, BLACK, ball.get_center_location(), BALL_RADIUS)
 
     def reset_map(self, map_index):
-        return pygame.image.load(MAZE_TEXT.format(str(map_index)))
+        MAZE = pygame.image.load(MAZE_TEXT.format(str(map_index)))
+
+        MAZE = pygame.transform.scale(MAZE, (
+            int(WIDTH * MAZE.get_width() / WIDTH_ORIG), int(HEIGHT * MAZE.get_height() / HEIGHT_ORIG)))
+        return MAZE
+
+    def wall_collision(self, point):
+        pixel_rgb = get_color(self.map_image, point)
+        if 85 > pixel_rgb[0] > 70:
+            return True

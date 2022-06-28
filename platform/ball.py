@@ -18,7 +18,7 @@ class Ball:
         self.vertical_neg = 1
         self.to_kill = False
 
-    def go(self, value):
+    def go(self, value, display):
 
         x = int(self.__xPos)
         y = int(self.__yPos)
@@ -31,10 +31,10 @@ class Ball:
 
         angle_radian = (self.__angle*(math.pi/180))
 
-        if wall_collision(self.__points['right']) or wall_collision(self.__points['left']):
+        if display.wall_collision(self.__points['right']) or display.wall_collision(self.__points['left']):
             self.horizontal_neg *= -1
             self.to_kill = True
-        if wall_collision(self.__points['bottom']) or wall_collision(self.__points['top']):
+        if display.wall_collision(self.__points['bottom']) or display.wall_collision(self.__points['top']):
             self.vertical_neg *= -1
             self.to_kill = True
 
@@ -52,6 +52,3 @@ class Ball:
 
     def get_time(self):
         return self.__time
-
-    def draw_ball(self):
-        return pygame.draw.circle(screen, BLACK, self.get_center_location(), BALL_RADIUS)

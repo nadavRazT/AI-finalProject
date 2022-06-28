@@ -18,7 +18,8 @@ class Action:
         self.action_type = action_type
 
 class State:
-    def __init__(self, tank_list):
+    def __init__(self, tank_list, display):
+        self.display = display
         self.tank_list = tank_list
         self.ball_list = []
         for tank in tank_list:
@@ -30,9 +31,9 @@ class State:
             if action.agent.get_exist() == 0:
                 continue
             if action.action_type == ActionType.FORWARD:
-                action.agent.go(MOVEMENT_DEGREE)
+                action.agent.go(MOVEMENT_DEGREE, display)
             if action.action_type == ActionType.BACKWARD:
-                action.agent.go(-1 * MOVEMENT_DEGREE)
+                action.agent.go(-1 * MOVEMENT_DEGREE, display)
             if action.action_type == ActionType.RIGHT:
                 action.agent.rotate(-1 * ROTATION_DEGREE)
             if action.action_type == ActionType.LEFT:
@@ -45,9 +46,10 @@ class State:
         # moving balls
         for tank in self.tank_list:
             for ball in tank.get_balls():
-                ball.go(BALL_SPEED)
+                ball.go(BALL_SPEED, display)
+            tank.check_balls()
 
-        # checking tank - ball collision
+    # checking tank - ball collision
         for ball in self.ball_list:
             for tank in self.tank_list:
                 if check_boom(ball, tank) and tank.get_exist() and not ball.to_kill:
@@ -56,7 +58,7 @@ class State:
                     for shooting_tank in self.tank_list:
                         shooting_tank.poping_ball(ball)
 
-        return State(self.tank_list)
+        return State(self.tank_list, display)
 
 
     def is_terminal(self):

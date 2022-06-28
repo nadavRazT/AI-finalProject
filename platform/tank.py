@@ -6,6 +6,7 @@ import numpy as np
 
 class ATank:
     def __init__(self, color, x_pos, y_pos, angle, tank_image, controls, team, controller):
+        self.is_released = True
         self.__i_xpos = x_pos
         self.__i_ypos = y_pos
         self.__xPos = x_pos
@@ -45,7 +46,7 @@ class ATank:
         self.__rect = self.__image.get_rect()
         self.__rect.center = (x, y)
 
-    def go(self, value):
+    def go(self, value, display):
 
         self.__points = {
             'right': [(self.__rect.center[0] + 14, self.__rect.center[1] - 14),
@@ -73,8 +74,8 @@ class ATank:
 
         self.horizontal_move = -value * math.cos(angle_radian)
         self.vertical_move = value * math.sin(angle_radian)
-        wall_calculation_horizontal = self.calculate_horizontal(self.horizontal_move)
-        wall_calculation_vertical = self.calculate_vertical(self.vertical_move)
+        wall_calculation_horizontal = self.calculate_horizontal(self.horizontal_move, display)
+        wall_calculation_vertical = self.calculate_vertical(self.vertical_move, display)
 
         if wall_calculation_horizontal != 100:
             self.horizontal_move = wall_calculation_horizontal
@@ -90,33 +91,33 @@ class ATank:
         self.team.add_score()
         return
 
-    def calculate_horizontal(self, value):
+    def calculate_horizontal(self, value, display):
 
         right, left = self.__points['right'], self.__points['left']
 
         if value >= 0:
             for point in right:
-                if wall_collision(point):
+                if display.wall_collision(point):
                     return 0
             return 100
         elif value < 0:
             for point in left:
-                if wall_collision(point):
+                if display.wall_collision(point):
                     return 0
             return 100
 
-    def calculate_vertical(self, value):
+    def calculate_vertical(self, value, display):
 
         top, bottom = self.__points['top'], self.__points['bottom']
 
         if value >= 0:
             for point in top:
-                if wall_collision(point):
+                if display.wall_collision(point):
                     return 0
             return 100
         elif value < 0:
             for point in bottom:
-                if wall_collision(point):
+                if display.wall_collision(point):
                     return 0
             return 100
 
@@ -174,23 +175,27 @@ class ATank:
         return self.__points
 
     def get_manual_actions(self):
+
         actions = []
         if keyboard.is_pressed(self.__controls[3]):
             actions.append(Action(self, ActionType.LEFT))
         if keyboard.is_pressed(self.__controls[2]):
-            actions.append(Action(self,ActionType.RIGHT))
+            actions.append(Action(self, ActionType.RIGHT))
         if keyboard.is_pressed(self.__controls[0]):
             actions.append(Action(self, ActionType.FORWARD))
         if keyboard.is_pressed(self.__controls[1]):
             actions.append(Action(self, ActionType.BACKWARD))
-        if keyboard.is_pressed(self.__controls[4]):
+        if keyboard.is_pressed(self.__controls[4]) and self.is_released:
             actions.append(Action(self, ActionType.SHOOT))
-            print("bulbul")
+            self.is_released = False
+        if not keyboard.is_pressed(self.__controls[4]):
+            self.is_released = True
         return actions
 
     def get_action(self, state):
         if self.controller == MAN_CONTROL:
             return self.get_manual_actions()
+
 
 class Team:
     def __init__(self, color, n_tanks):
@@ -223,14 +228,16 @@ class TankFactory:
         for team_num in range(len(teams)):
             n = teams[team_num]
             team_color = group_colors[team_num]
-            team = Team(team_color,n)
+            team = Team(team_color, n)
             for _ in range(n):
                 if i < n_manual:
-                    self.tank_list.append(ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color],
-                                      MANUAL_CONTROL_TANK[i], team, MAN_CONTROL))
+                    self.tank_list.append(
+                        ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color],
+                              MANUAL_CONTROL_TANK[i % len(MANUAL_CONTROL_TANK)], team, MAN_CONTROL))
                 else:
                     self.tank_list.append(
-                        ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color], AI_CONTROL, team, NOT_MAN_CONTROL))
+                        ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color], AI_CONTROL,
+                              team, NOT_MAN_CONTROL))
                 i += 1
 
     def get_tanks(self):

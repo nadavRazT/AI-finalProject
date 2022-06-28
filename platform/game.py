@@ -13,7 +13,7 @@ class Game:
         pygame.init()
         self.agents = agents
         self.diaplay = Display(display, map_index, n_teams)
-        self.init_state = State(agents)
+        self.init_state = State(agents, display)
         self.state = self.init_state
         self.num_moves = 0
         self.startingIndex = 0
@@ -52,9 +52,6 @@ class Game:
             agentIndex = (agentIndex + 1) % numAgents
 
         return self.state.get_score()
-
-    def get_map(self):
-        return self.map
 
     def get_agents(self):
         return self.agents
