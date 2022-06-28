@@ -1,10 +1,11 @@
 from ball import *
 from game_setting import *
+from state import Action, ActionType
 import numpy as np
 
 
 class ATank:
-    def __init__(self, color, x_pos, y_pos, angle, tank_image, controls, team):
+    def __init__(self, color, x_pos, y_pos, angle, tank_image, controls, team, controller):
         self.__i_xpos = x_pos
         self.__i_ypos = y_pos
         self.__xPos = x_pos
@@ -16,6 +17,7 @@ class ATank:
         self.__points = {}
         self.__balls = []
         self.__controls = controls
+        self.controller = controller
         self.__death = None
         self.vertical_move = 0
         self.horizontal_move = 0
@@ -87,28 +89,6 @@ class ATank:
     def add_score(self):
         self.team.add_score()
         return
-
-    def move_control(self):
-
-        self.move_value = 0
-        self.rotate_value = 0
-
-        if keyboard.is_pressed(self.__controls[3]):
-            self.rotate_value = ROTATION_DEGREE
-        if keyboard.is_pressed(self.__controls[2]):
-            self.rotate_value = -ROTATION_DEGREE
-        if keyboard.is_pressed(self.__controls[0]):
-            self.move_value = MOVEMENT_DEGREE
-        if keyboard.is_pressed(self.__controls[1]):
-            self.move_value = -MOVEMENT_DEGREE
-
-        self.go(self.move_value)
-        self.rotate(self.rotate_value)
-
-    def shoot_control(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == self.__controls[4] and self.is_exist:
-                self.shoot()
 
     def calculate_horizontal(self, value):
 
@@ -196,6 +176,22 @@ class ATank:
     def get_points(self):
         return self.__points
 
+    def get_manual_actions(self):
+        actions = []
+        if keyboard.is_pressed(self.__controls[3]):
+            actions.append(Action(ActionType.LEFT, self))
+        if keyboard.is_pressed(self.__controls[2]):
+            actions.append(Action(ActionType.RIGHT, self))
+        if keyboard.is_pressed(self.__controls[0]):
+            actions.append(Action(ActionType.FORWARD, self))
+        if keyboard.is_pressed(self.__controls[1]):
+            actions.append(Action(ActionType.BACKWARD, self))
+        if keyboard.is_pressed(self.__controls[4]):
+            actions.append(Action(ActionType.SHOOT, self))
+
+    def get_action(self):
+        if self.controller == game_setting.MAN_CONTROL:
+            return self.get_manual_actions()
 
 class Team:
     def __init__(self, color, n_tanks):

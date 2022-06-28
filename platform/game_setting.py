@@ -86,7 +86,9 @@ EXPLOSION_SOUND = 'musics/explosion.mp3'
 MANUAL_CONTROL_TANK = [('up', 'down', 'right', 'left', pygame.K_SLASH),
                        ('w', 's', 'd', 'a', pygame.K_TAB),
                        ('u', 'j', 'k', 'h', pygame.K_SPACE)]
-AI_CONTROL = ('u', 'j', 'k', 'h', pygame.K_SPACE)
+MAN_CONTROL = "manual"
+GENETIC_CONTROL = "genetic"
+DQN_CONTROL= "dqn"
 
 ###################
 # speeds Settings #
