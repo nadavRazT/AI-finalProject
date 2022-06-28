@@ -3,6 +3,7 @@ from display import Display
 import pygame
 from game_setting import *
 
+
 class Game:
     """
       The Game manages the control flow, soliciting actions from agents.
@@ -31,11 +32,11 @@ class Game:
             agent = self.agents[agentIndex]
             ## generate observation
             # observation = self.state.deepCopy() todo: check if needed
-            action = agent.getAction(self.state)
-            action_list.append(action)
+            action = agent.get_action(self.state)
+            action_list += action
             self.move_history.append(action)
 
-            if agentIndex == numAgents + 1:
+            if agentIndex == numAgents - 1:
                 ## track progress
                 self.num_moves += 1
                 ## update state
@@ -44,6 +45,7 @@ class Game:
                 self.diaplay.update(self.state)
             agentIndex = (agentIndex + 1) % numAgents
 
+        return self.state.get_score()
 
     def get_map(self):
         return self.map
@@ -53,3 +55,4 @@ class Game:
 
     def get_display(self):
         return self.diaplay
+
