@@ -62,7 +62,7 @@ def main_loop(tank_list ,player_numbers, n_teams, display):
                     if tank.get_exist():
                         tank.add_score() ## check if number of living or kills
                     if display:
-                        draw_score(tank.color, str(tank.get_score()))
+                        draw_score(tank.color, str(tank.get_score())) ## DONE
                     tank.is_exist = 1
                 pygame.time.wait(1000)
                 return {tank.color: tank.get_score() for tank in tank_list}
