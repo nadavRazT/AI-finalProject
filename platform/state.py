@@ -83,6 +83,38 @@ class State:
                 ret[tank.color] += tank.num_kills_round
         return ret
 
+
+    def generate_wall_rays(self, agent):
+        ret = []
+        delta_angle = 12 * math.pi / 180
+        delta_r = 6
+        for i in range(int(2 * math.pi / delta_angle)):
+            curr_x = agent.get_x()
+            curr_y = agent.get_y()
+            curr_angle = agent.get_angle() + i * delta_angle
+            while (curr_x > 0 and curr_x < WIDTH and curr_y > 0 and curr_y < HEIGHT):
+                if self.display.wall_collision((int(curr_x), int(curr_y))):
+                    break
+                curr_x += delta_r * math.cos(curr_angle)
+                curr_y += delta_r * math.sin(curr_angle)
+            curr_x = min(max(curr_x, 0), WIDTH)
+            curr_y = min(max(curr_y, 0), HEIGHT)
+            distance = math.sqrt((curr_x - agent.get_x())**2 + (curr_y - agent.get_y())**2)
+            ret.append(distance)
+        return ret
+
+
+    def generate_wall_cones(self):
+        cone_size = 12 * math.pi / 180  # 12 degrees in radians
+        ret = []
+        for i in range(int(2 * math.pi / cone_size)):
+            pass
+
+
+    def extract_features(self, agent):
+        return self.generate_wall_rays(agent)
+
+
     def get_features(self, agent, state):
         return
 

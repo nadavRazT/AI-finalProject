@@ -169,6 +169,12 @@ class ATank:
         self.num_kills += 1
         self.num_kills_round += 1
 
+    def get_x(self):
+        return self.__xPos
+
+    def get_y(self):
+        return self.__yPos
+
     def get_balls(self):
         return self.__balls
 
@@ -213,6 +219,7 @@ class ATank:
 
     def get_action(self, state):
         if self.controller == MAN_CONTROL:
+            #print(self.__angle)
             return self.get_manual_actions()
 
 
