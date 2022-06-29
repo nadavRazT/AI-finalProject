@@ -1,4 +1,6 @@
 from enum import Enum
+
+import numpy as np
 import pygame
 from game_setting import *
 from tank import *
@@ -104,7 +106,7 @@ class State:
         return ret
 
 
-    def generate_wall_cones(self):
+    def generate_wall_cones(self): #todo check if neccecery
         cone_size = 12 * math.pi / 180  # 12 degrees in radians
         ret = []
         for i in range(int(2 * math.pi / cone_size)):
@@ -123,12 +125,27 @@ class State:
 
     def get_tank_cone(self, agent, state):
         tank_list = state.get_tanks()
-        enemy_list = []
-        enemy_boolean_list = []
-        team_list = []
-        team_boolean_list = []
-
-        return
+        cone_rays = np.linspace(0, np.pi, NUM_OF_CONES - 1)
+        enemy_list = np.zeros(NUM_OF_CONES)
+        enemy_boolean_list = np.zeros(NUM_OF_CONES)
+        team_list = np.zeros(NUM_OF_CONES)
+        team_boolean_list = np.zeros(NUM_OF_CONES)
+        for tank in tank_list:
+            x_pos = tank.get_x()
+            y_pos = tank.get_y()
+            dist = np.sqrt((y_pos - agent.get_y()) ** 2 + (x_pos - agent.get_x()) ** 2)
+            angle = np.arctan((y_pos - agent.get_y()) / (x_pos - agent.get_x())) - agent.get_angle()
+            if angle < 0: angle += 2 * np.pi
+            cone_index = np.where(cone_rays > angle)[0]
+            if tank.get_team() == agent.get_team():
+                team_boolean_list[cone_index] += 1
+                if team_list[cone_index] > dist:
+                    team_list[cone_index] = dist
+            else:
+                enemy_boolean_list[cone_index] += 1
+                if enemy_list[cone_index] > dist:
+                    enemy_list[cone_index] = dist
+        return team_list, team_boolean_list, enemy_list, enemy_boolean_list
 
     def get_ball_cone(self):
         return
