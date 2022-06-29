@@ -89,12 +89,14 @@ class State:
     def get_reward(self, agent, state):
         return
 
-    def get_enemy_cone(self):
-        return boolean_list, distance_list
+    def get_tank_cone(self, agent, state):
+        tank_list = state.get_tanks()
+        enemy_list = []
+        enemy_boolean_list = []
+        team_list = []
+        team_boolean_list = []
 
-    def get_team_cone(self):
-        return boolean_list, distance_list
+        return
 
     def get_ball_cone(self):
-        return boolean_list, distance_list
-
+        return
