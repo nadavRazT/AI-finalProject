@@ -23,13 +23,27 @@ class ATank:
         self.vertical_move = 0
         self.horizontal_move = 0
         self.rotate_value = 0
+        self.num_kills = 0
+        self.num_kills_round = 0
+        self.num_destroyed = 0
         self.move_value = 0
         self.is_exist = 1
         self.color = color
         self.team = team
 
+
     def __str__(self):
         return self.color
+
+    def reset_tank(self):
+        self.__xPos = self.__i_xpos + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2
+        self.__yPos = self.__i_ypos + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2
+        self.reset_balls()
+        self.__image = self.__orgImage
+        self.is_exist =1
+        self.__rect.center = (self.__xPos, self.__yPos)
+        self.num_kills_round = 0
+        return
 
     def get_team(self):
         return self.team
@@ -122,7 +136,7 @@ class ATank:
             return 100
 
     def shoot(self):
-        shooting_ball = Ball(self.__xPos, self.__yPos, self.__angle)
+        shooting_ball = Ball(self.__xPos, self.__yPos, self.__angle, self)
         self.__balls.append(shooting_ball)
 
     def check_balls(self):
@@ -147,8 +161,13 @@ class ATank:
 
     def destroy(self):
         self.is_exist = 0
+        self.num_destroyed += 1
         self.__death = time.time()
         self.__image = IMG_EXPLOSION
+
+    def update_kills(self):
+        self.num_kills += 1
+        self.num_kills_round += 1
 
     def get_balls(self):
         return self.__balls
@@ -225,18 +244,16 @@ class TankFactory:
         positions = get_team_positions(teams)
         self.tank_list = []
         i = 0
-        for team_num in range(len(teams)):
-            n = teams[team_num]
-            team_color = group_colors[team_num]
-            team = Team(team_color, n)
-            for _ in range(n):
+        for color, n_players in teams.items():
+            team = Team(color, n_players)
+            for _ in range(n_players):
                 if i < n_manual:
                     self.tank_list.append(
-                        ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color],
+                        ATank(color, positions[i][0], positions[i][1], 180, TANK_IMAGES[color],
                               MANUAL_CONTROL_TANK[i % len(MANUAL_CONTROL_TANK)], team, MAN_CONTROL))
                 else:
                     self.tank_list.append(
-                        ATank(team_color, positions[i][0], positions[i][1], 180, TANK_IMAGES[team_color], AI_CONTROL,
+                        ATank(color, positions[i][0], positions[i][1], 180, TANK_IMAGES[color], AI_CONTROL,
                               team, NOT_MAN_CONTROL))
                 i += 1
 

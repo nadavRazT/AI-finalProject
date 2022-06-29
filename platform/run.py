@@ -8,17 +8,13 @@ from functools import reduce
 
 def run_game(n_rounds, tanks, display, map_index, n_teams):
     scores = []
-    for round in range(n_rounds):
-        new_game = Game(tanks, display, map_index, n_teams)
-        score = new_game.run()
-        print(f"---------------\n"
-              f"result of round {round}:\n "
-              f"{score}")
-        scores.append(score)
-    total = reduce(reducer, scores, {})
+
+    new_game = Game(tanks, display, map_index, n_teams, n_rounds)
+    score = new_game.run()
+
     print(f"---------------\n"
           f"total results: \n"
-          f"{total}")
+          f"{score}")
     return
 
 
@@ -32,7 +28,7 @@ def main():
 
     args = parser.parse_args()
     n_manual = int(args.n_manual)
-    teams = [int(t) for t in args.teams]
+    teams = {group_colors[t]: int(args.teams[t]) for t in range(len(args.teams))}
     if len(teams) == 1:
         print("need someone to fight")
         exit()

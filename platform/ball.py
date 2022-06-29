@@ -4,7 +4,7 @@ from functions import *
 
 class Ball:
 
-    def __init__(self, x, y, angle):
+    def __init__(self, x, y, angle, tank):
         self.__yPos = y
         self.__angle = angle
         angle_radian = (self.__angle*(math.pi/180))
@@ -17,6 +17,7 @@ class Ball:
         self.horizontal_neg = 1
         self.vertical_neg = 1
         self.to_kill = False
+        self.shooting_tank = tank
 
     def go(self, value, display):
 
@@ -52,3 +53,7 @@ class Ball:
 
     def get_time(self):
         return self.__time
+
+
+    def get_tank(self):
+        return self.shooting_tank

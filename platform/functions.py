@@ -71,10 +71,9 @@ def reducer(accumulator, element):
 
 def get_team_positions(teams):
     locations = []
-    for t in range(len(teams)):
-        team = teams[t]
-        team_pos = TEAM_START_POSITIONS[t]
-        for i in range(team):
+    for color, n_players in teams.items():
+        team_pos = TEAM_START_POSITIONS[color]
+        for i in range(n_players):
             locations.append((team_pos[0] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2,
                               team_pos[1] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2))
     return locations

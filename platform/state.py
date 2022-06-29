@@ -55,6 +55,7 @@ class State:
                 if check_boom(ball, tank) and tank.get_exist() and not ball.to_kill:
                     display.play_sound(EXPLOSION_SOUND)
                     tank.destroy()
+                    ball.get_tank().update_kills()
                     for shooting_tank in self.tank_list:
                         shooting_tank.poping_ball(ball)
 
@@ -75,11 +76,10 @@ class State:
 
     def get_score(self):
         ret = dict()
-
         for tank in self.tank_list:
             if tank.color not in ret.keys():
                 ret[tank.color] = 0
             if tank.get_exist():
-                ret[tank.color] += 1
+                ret[tank.color] += tank.num_kills_round
         return ret
 

@@ -46,10 +46,10 @@ MAZE = pygame.image.load("maps/map00.jpg")
 TANK_SCATTER_INDEX = 100
 OFFSET_p = HEIGHT - TANK_SCATTER_INDEX - 2 * TANK_RADIUS
 OFFSET_m = TANK_SCATTER_INDEX - 2 * TANK_RADIUS + 50
-TEAM_START_POSITIONS = ((OFFSET_m, OFFSET_m),
-                        (OFFSET_m, OFFSET_p),
-                        (OFFSET_p, OFFSET_m),
-                        (OFFSET_p, OFFSET_p))
+TEAM_START_POSITIONS = {"Red": (OFFSET_m, OFFSET_m),
+                        "Green": (OFFSET_m, OFFSET_p),
+                        "Blue": (OFFSET_p, OFFSET_m),
+                        "Yellow": (OFFSET_p, OFFSET_p)}
 
 TANK_POSSIBLE_POSITIONS = ((50, 50),
                            (390, 125),
@@ -99,14 +99,6 @@ DQN_CONTROL= "dqn"
 ROTATION_DEGREE = 3
 MOVEMENT_DEGREE = 4
 BALL_SPEED = 12
-
-################
-# Black window #
-################
-
-# screen = pygame.display.set_mode((WIDTH, HEIGHT))
-# pygame.display.set_caption(GAME_TITLE)
-# clock = pygame.time.Clock()
 
 ################
 # transform im #

@@ -55,8 +55,6 @@ class Display:
         self.screen.blit(SCORE_IMAGES[self.n_teams], (HEIGHT, 0))
         self.draw_score(scores)
         # pygame.time.wait(1000)
-
-
         for tank in state.get_tanks():
             if tank.get_exist():
                 self.draw_tank(tank)
