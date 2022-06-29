@@ -83,3 +83,18 @@ class State:
                 ret[tank.color] += tank.num_kills_round
         return ret
 
+    def get_features(self, agent, state):
+        return
+
+    def get_reward(self, agent, state):
+        return
+
+    def get_enemy_cone(self):
+        return boolean_list, distance_list
+
+    def get_team_cone(self):
+        return boolean_list, distance_list
+
+    def get_ball_cone(self):
+        return boolean_list, distance_list
+

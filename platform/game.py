@@ -42,15 +42,15 @@ class Game:
             if action:
                 action_list += action
             self.move_history.append(action)
+            self.state = self.state.generate_successor(action_list, self.diaplay)
+            action_list = []
 
             if agentIndex == numAgents - 1:
                 ## track progress
                 self.num_moves += 1
                 ## update state
-                self.state = self.state.generate_successor(action_list, self.diaplay)
                 ## update display
                 self.diaplay.update(self.state)
-                action_list = []
             agentIndex = (agentIndex + 1) % numAgents
         return self.state.get_score()
 
