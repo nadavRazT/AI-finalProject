@@ -32,7 +32,7 @@ TANK_SIZE_FACTOR = 1
 BALL_RADIUS = int(5 // TANK_SIZE_FACTOR)
 TANK_RADIUS = int(20 // TANK_SIZE_FACTOR)
 group_colors = ["Red", "Green", "Blue"]#, "Yellow"]
-
+NUM_OF_CONES = 30
 ###############
 # Game Images #
 ###############
