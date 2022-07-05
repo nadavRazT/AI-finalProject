@@ -137,7 +137,10 @@ class State:
         return False
 
     def extract_features(self, agent):
-        return self.generate_wall_rays(agent)
+        wall_ray = self.generate_wall_rays(agent)
+        team_list, team_boolean_list, enemy_list, enemy_boolean_list = self.get_tank_cone(agent)
+        ball_dist_list, ball_boolean_list = self.get_ball_cone(agent)
+        return wall_ray, team_list, team_boolean_list, enemy_list, enemy_boolean_list, ball_dist_list, ball_boolean_list
 
     def get_reward(self, agent, state):
         return
@@ -208,6 +211,5 @@ class State:
             cone_index = np.where(cone_rays > angle_abs)[0][0]
             ball_boolean_list[cone_index] += 1
             if dist < ball_hit_list[cone_index]: ball_hit_list[cone_index] = dist
-        if len(np.where(ball_hit_list < np.inf)[0]) > 0:
-            print(f"\n=========\nagent: {agent.color}\n{ball_hit_list}")
+
         return ball_list, ball_boolean_list
