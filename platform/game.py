@@ -13,7 +13,7 @@ class Game:
     def __init__(self, agents, display, map_index, n_teams, n_rounds):
         pygame.init()
         self.agents = agents
-        self.diaplay = Display(display, map_index, n_teams)
+        self.display = Display(display, map_index, n_teams)
         self.init_state = State(agents, display)
         self.state = self.init_state
         self.num_moves = 0
@@ -39,11 +39,10 @@ class Game:
             # self.state.get_reward(agent)
 
             action = agent.get_action(self.state)
-            self.state.get_reward(agent)
             if action:
                 action_list += action
             self.move_history.append(action)
-            self.state = self.state.generate_successor(action_list, self.diaplay)
+            self.state = self.state.generate_successor(action_list, self.display)
 
 
             action_list = []
@@ -53,7 +52,7 @@ class Game:
                 self.num_moves += 1
                 ## update state
                 ## update display
-                self.diaplay.update(self.state)
+                self.display.update(self.state)
             agentIndex = (agentIndex + 1) % numAgents
         return self.state.get_score()
 
@@ -73,10 +72,10 @@ class Game:
             tank.reset_tank()
         # reset balls
         self.state = self.init_state
-        self.diaplay.update(self.state)
+        self.display.update(self.state)
 
     def get_agents(self):
         return self.agents
 
     def get_display(self):
-        return self.diaplay
+        return self.display
