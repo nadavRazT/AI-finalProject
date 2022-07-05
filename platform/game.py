@@ -36,6 +36,7 @@ class Game:
                     sys.exit()
 
             agent = self.agents[agentIndex]
+            self.state.get_tank_cone(agent)
             ## generate observation
             # observation = self.state.deepCopy() todo: check if needed
             action = agent.get_action(self.state)

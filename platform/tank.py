@@ -46,7 +46,7 @@ class ATank:
         return
 
     def get_team(self):
-        return self.team
+        return self.color
 
     def get_score(self):
         return self.team.get_score()

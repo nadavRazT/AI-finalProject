@@ -45,6 +45,12 @@ class Ball:
         self.__xPos += self.horizontal_move
         self.__yPos += self.vertical_move
 
+    def get_x(self):
+        return self.__xPos
+
+    def get_y(self):
+        return self.__yPos
+
     def get_center_location(self):
         return int(self.__xPos), int(self.__yPos)
 
