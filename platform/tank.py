@@ -91,11 +91,11 @@ class ATank:
         wall_calculation_horizontal = self.calculate_horizontal(self.horizontal_move, display)
         wall_calculation_vertical = self.calculate_vertical(self.vertical_move, display)
 
-        if wall_calculation_horizontal != 100:
-            self.horizontal_move = wall_calculation_horizontal
+        if wall_calculation_horizontal:
+            self.horizontal_move = 0
 
-        if wall_calculation_vertical != 100:
-            self.vertical_move = wall_calculation_vertical
+        if wall_calculation_vertical:
+            self.vertical_move = 0
 
         self.__xPos += self.horizontal_move
         self.__yPos += self.vertical_move
@@ -112,13 +112,13 @@ class ATank:
         if value >= 0:
             for point in right:
                 if display.wall_collision(point):
-                    return 0
-            return 100
+                    return True
+            return False
         elif value < 0:
             for point in left:
                 if display.wall_collision(point):
-                    return 0
-            return 100
+                    return True
+            return False
 
     def calculate_vertical(self, value, display):
 
@@ -127,13 +127,13 @@ class ATank:
         if value >= 0:
             for point in top:
                 if display.wall_collision(point):
-                    return 0
-            return 100
+                    return True
+            return False
         elif value < 0:
             for point in bottom:
                 if display.wall_collision(point):
-                    return 0
-            return 100
+                    return True
+            return False
 
     def shoot(self):
         shooting_ball = Ball(self.__xPos, self.__yPos, self.__angle, self)

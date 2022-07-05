@@ -14,7 +14,7 @@ class Game:
         pygame.init()
         self.agents = agents
         self.display = Display(display, map_index, n_teams)
-        self.init_state = State(agents, display)
+        self.init_state = State(agents, self.display)
         self.state = self.init_state
         self.num_moves = 0
         self.startingIndex = 0
@@ -36,7 +36,7 @@ class Game:
                     sys.exit()
 
             agent = self.agents[agentIndex]
-            # self.state.get_reward(agent)
+            self.state.get_reward(agent)
 
             action = agent.get_action(self.state)
             if action:

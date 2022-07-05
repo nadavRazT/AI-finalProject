@@ -39,11 +39,10 @@ class Ball:
             self.vertical_neg *= -1
             self.to_kill = True
 
-        self.horizontal_move = self.horizontal_neg * -value*math.cos(angle_radian)
-        self.vertical_move = self.vertical_neg * value*math.sin(angle_radian)
-
-        self.__xPos += self.horizontal_move
-        self.__yPos += self.vertical_move
+        horizontal_move = self.horizontal_neg * -value*math.cos(angle_radian)
+        vertical_move = self.vertical_neg * value*math.sin(angle_radian)
+        self.__xPos += horizontal_move
+        self.__yPos += vertical_move
 
     def get_x(self):
         return self.__xPos

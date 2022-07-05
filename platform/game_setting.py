@@ -97,8 +97,8 @@ DQN_CONTROL= "dqn"
 ###################
 
 ROTATION_DEGREE = 3
-MOVEMENT_DEGREE = 3
-BALL_SPEED = 1
+MOVEMENT_DEGREE = 2
+BALL_SPEED = 2
 REFRESH_RATE = 100
 ################
 # transform im #
