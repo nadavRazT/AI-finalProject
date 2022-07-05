@@ -64,7 +64,7 @@ class Display:
             for ball in tank.get_balls():
                 self.draw_ball(ball)
 
-        self.clock.tick(60)
+        self.clock.tick(REFRESH_RATE)
         pygame.display.update()
 
 

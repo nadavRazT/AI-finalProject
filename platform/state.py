@@ -1,5 +1,5 @@
 from enum import Enum
-
+import math
 import numpy as np
 import pygame
 from game_setting import *
@@ -120,13 +120,14 @@ class State:
 
     def get_features(self, agent, state):
         return
+
     def check_walls_between(self, tank, ball):
         delta_r = 5
         curr_x = ball.get_x()
         curr_y = ball.get_y()
         curr_angle = math.pi * ball.get_angle() / 180
         while 0 < curr_x < WIDTH and 0 < curr_y < HEIGHT:
-            dist_to_tank = np.sqrt((curr_x - tank.get_x())**2 + (curr_y - tank.get_y())**2)
+            dist_to_tank = np.sqrt((curr_x - tank.get_x()) ** 2 + (curr_y - tank.get_y()) ** 2)
             if dist_to_tank < TANK_RADIUS:
                 return False
             if self.display.wall_collision((int(curr_x), int(curr_y))):
@@ -137,7 +138,6 @@ class State:
 
     def extract_features(self, agent):
         return self.generate_wall_rays(agent)
-
 
     def get_reward(self, agent, state):
         return
@@ -179,8 +179,9 @@ class State:
         dy = y_pos - agent.get_y()
         dx = x_pos - agent.get_x()
         ball_angle = ball.get_angle() * np.pi / 180
-        hit_distance = np.abs(np.cos(ball_angle) * dy - np.sin(ball_angle) * dx)
-        if hit_distance < TANK_RADIUS:
+
+        hit_distance = np.abs(np.cos(ball_angle) * dy + np.sin(ball_angle) * dx)
+        if hit_distance < 2 * TANK_RADIUS:
             return True
         return False
 
@@ -189,11 +190,11 @@ class State:
         ball_list = self.get_ball_list()
 
         cone_rays = np.linspace(0, 2 * np.pi, NUM_OF_CONES - 1)
-        ball_list = np.ones(NUM_OF_CONES) * np.inf
+        ball_hit_list = np.ones(NUM_OF_CONES) * np.inf
         ball_boolean_list = np.zeros(NUM_OF_CONES)
 
         for ball in ball_list:
-            if ball.shooting_tank == agent:
+            if ball.shooting_tank == agent or ball.to_kill:
                 continue
             x_pos = ball.get_x()
             y_pos = ball.get_y()
@@ -202,12 +203,11 @@ class State:
             dist = np.sqrt(dx ** 2 + dy ** 2)
             angle_abs = np.arctan2(dy, - dx) % (2 * np.pi)
 
-            if not self.check_hit(agent, ball) or self.check_walls_between(agent,ball):
+            if not self.check_hit(agent, ball) or self.check_walls_between(agent, ball):
                 continue
             cone_index = np.where(cone_rays > angle_abs)[0][0]
             ball_boolean_list[cone_index] += 1
-            if dist < ball_list[cone_index]: ball_list[cone_index] = dist
-
+            if dist < ball_hit_list[cone_index]: ball_hit_list[cone_index] = dist
+        if len(np.where(ball_hit_list < np.inf)[0]) > 0:
+            print(f"\n=========\nagent: {agent.color}\n{ball_hit_list}")
         return ball_list, ball_boolean_list
-
-

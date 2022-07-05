@@ -40,6 +40,7 @@ class Game:
             ## generate observation
             # observation = self.state.deepCopy() todo: check if needed
             action = agent.get_action(self.state)
+            self.state.get_ball_cone(agent)
             if action:
                 action_list += action
             self.move_history.append(action)
