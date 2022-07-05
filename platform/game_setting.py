@@ -43,12 +43,12 @@ MAP_NUMBER = random.randint(1, NUMBER_OF_MAP)
 MAZE_TEXT = 'maps/map0{0}.jpg'
 MAZE = pygame.image.load(MAZE_TEXT.format(str(MAP_NUMBER)))
 MAZE = pygame.image.load("maps/map00.jpg")
-TANK_SCATTER_INDEX = 100
+TANK_SCATTER_INDEX = 50
 OFFSET_p = HEIGHT - TANK_SCATTER_INDEX - 2 * TANK_RADIUS
-OFFSET_m = TANK_SCATTER_INDEX - 2 * TANK_RADIUS + 50
-TEAM_START_POSITIONS = {"Red": (OFFSET_m, OFFSET_m),
-                        "Green": (OFFSET_m, OFFSET_p),
-                        "Blue": (OFFSET_p, OFFSET_m),
+OFFSET_m = TANK_SCATTER_INDEX - 2 * TANK_RADIUS
+TEAM_START_POSITIONS = {"Red": (OFFSET_m + 50, OFFSET_m + 50),
+                        "Green": (OFFSET_m + 50, OFFSET_p ),
+                        "Blue": (OFFSET_p + 50, OFFSET_m - 50),
                         "Yellow": (OFFSET_p, OFFSET_p)}
 
 TANK_POSSIBLE_POSITIONS = ((50, 50),
