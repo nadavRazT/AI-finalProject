@@ -36,9 +36,13 @@ class Game:
                     sys.exit()
 
             agent = self.agents[agentIndex]
+<<<<<<< Updated upstream
             self.state.get_reward(agent)
 
+=======
+>>>>>>> Stashed changes
             action = agent.get_action(self.state)
+            self.state.get_ball_cone(agent)
             if action:
                 action_list += action
             self.move_history.append(action)
@@ -65,6 +69,7 @@ class Game:
         self.score = reduce(reducer, scores, {})
         pygame.quit()
         return self.score
+
 
     def reset_game(self):
         # reset tanks
