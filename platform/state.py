@@ -140,10 +140,71 @@ class State:
         wall_ray = self.generate_wall_rays(agent)
         team_list, team_boolean_list, enemy_list, enemy_boolean_list = self.get_tank_cone(agent)
         ball_dist_list, ball_boolean_list = self.get_ball_cone(agent)
-        return wall_ray, team_list, team_boolean_list, enemy_list, enemy_boolean_list, ball_dist_list, ball_boolean_list
+        return np.concatenate([wall_ray,
+                               team_list,
+                               enemy_list,
+                               ball_dist_list,
+                               ])
 
-    def get_reward(self, agent, state):
-        return
+    def get_reward(self, agent):
+        # check danger
+        ball_dist_list, ball_boolean_list = self.get_ball_cone(agent)
+        ball_dist_list = HEIGHT / np.array(ball_dist_list)
+        danger_factor = np.sum(ball_dist_list)
+
+        # check kills
+        KILL_REWARD_CONSTANT = 5
+        kill_reward = 0
+        threat_reward = 0
+        tank_ball_list = agent.get_balls()
+        for ball in tank_ball_list:
+            for tank in self.tank_list:
+                threat_reward += self.check_tank_threatening(tank, ball, agent.get_team())
+                if check_boom(ball, tank) and tank.get_exist() and not ball.to_kill:
+                    if tank.get_team() == agent.get_team():
+                        kill_reward -= 2 * KILL_REWARD_CONSTANT
+                    else:
+                        kill_reward += KILL_REWARD_CONSTANT
+
+        # check enemy distance
+        dist_enemy_reward = 0
+        dist_friend_reward = 0
+        for tank in self.tank_list:
+            if tank == agent:
+                continue
+
+            dist = self.get_dist(tank, agent)
+            if tank.get_team() == agent.get_team():
+                if dist_friend_reward < 1 / dist:
+                    dist_friend_reward = 1 / dist
+
+            if tank.get_team() != agent.get_team():
+                if dist_enemy_reward < 1 / dist:
+                    dist_enemy_reward = 1 / dist
+
+        return kill_reward + threat_reward + danger_factor + dist_enemy_reward + dist_friend_reward
+
+    def get_dist(self, obj1, obj2):
+        return np.sqrt((obj1.get_x() - obj1.get_x()) ** 2 + (obj2.get_y() - obj2.get_y()) ** 2)
+
+    def check_tank_threatening(self, tank, ball, team):
+        x_pos = ball.get_x()
+        y_pos = ball.get_y()
+        dy = y_pos - tank.get_y()
+        dx = x_pos - tank.get_x()
+        ball_angle = ball.get_angle() * np.pi / 180
+        dist = np.sqrt(dx ** 2 + dy ** 2)
+        hit_distance = np.abs(np.cos(ball_angle) * dy + np.sin(ball_angle) * dx)
+        threat_reward = HEIGHT ** 2 / (hit_distance * dist)
+        walls_flag = False
+        if self.check_walls_between(tank, ball):
+            threat_reward /= dist
+            walls_flag = True
+
+        if tank.get_team() == team:
+            threat_reward *= -np.exp(-hit_distance / TANK_RADIUS)
+            if walls_flag: threat_reward = 0
+        return threat_reward
 
     def get_tank_cone(self, agent):
 
