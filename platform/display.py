@@ -93,3 +93,6 @@ class Display:
         pixel_rgb = get_color(self.map_image, point)
         if 85 > pixel_rgb[0] > 70:
             return True
+
+    def pixel(self, color, pos):
+        self.screen.fill(color, (pos, (1, 1)))

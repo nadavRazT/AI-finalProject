@@ -97,11 +97,11 @@ class State:
         for i in range(int(2 * math.pi / delta_angle)):
             curr_x = agent.get_x()
             curr_y = agent.get_y()
-            curr_angle = agent.get_angle() + i * delta_angle
+            curr_angle = agent.get_angle() * math.pi / 180 + i * delta_angle
             while (curr_x > 0 and curr_x < WIDTH and curr_y > 0 and curr_y < HEIGHT):
                 if self.display.wall_collision((int(curr_x), int(curr_y))):
                     break
-                curr_x += delta_r * math.cos(curr_angle)
+                curr_x -= delta_r * math.cos(curr_angle)
                 curr_y += delta_r * math.sin(curr_angle)
             curr_x = min(max(curr_x, 0), WIDTH)
             curr_y = min(max(curr_y, 0), HEIGHT)
@@ -115,11 +115,32 @@ class State:
         for i in range(int(2 * math.pi / cone_size)):
             pass
 
+<<<<<<< Updated upstream
     def extract_features(self, agent):
         return self.generate_wall_rays(agent)
 
     def get_features(self, agent, state):
         return
+=======
+    def check_walls_between(self, tank, ball):
+        delta_r = 5
+        curr_x = ball.get_x()
+        curr_y = ball.get_y()
+        curr_angle = math.pi * ball.get_angle() / 180
+        while 0 < curr_x < WIDTH and 0 < curr_y < HEIGHT:
+            dist_to_tank = np.sqrt((curr_x - tank.get_x())**2 + (curr_y - tank.get_y())**2)
+            if dist_to_tank < TANK_RADIUS:
+                return False
+            if self.display.wall_collision((int(curr_x), int(curr_y))):
+                return True
+            curr_x -= delta_r * math.cos(curr_angle)
+            curr_y += delta_r * math.sin(curr_angle)
+        return False
+
+    def extract_features(self, agent):
+        return self.generate_wall_rays(agent)
+
+>>>>>>> Stashed changes
 
     def get_reward(self, agent, state):
         return

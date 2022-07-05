@@ -44,6 +44,8 @@ class Game:
                 action_list += action
             self.move_history.append(action)
             self.state = self.state.generate_successor(action_list, self.diaplay)
+
+
             action_list = []
 
             if agentIndex == numAgents - 1:

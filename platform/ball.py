@@ -23,6 +23,7 @@ class Ball:
 
         x = int(self.__xPos)
         y = int(self.__yPos)
+        print(str(x) + "," + str(y))
 
         self.__points ={
                         "right": (min(x+BALL_RADIUS, WIDTH), min(y+0, HEIGHT)),
