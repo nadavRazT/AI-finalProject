@@ -115,13 +115,11 @@ class State:
         for i in range(int(2 * math.pi / cone_size)):
             pass
 
-<<<<<<< Updated upstream
     def extract_features(self, agent):
         return self.generate_wall_rays(agent)
 
     def get_features(self, agent, state):
         return
-=======
     def check_walls_between(self, tank, ball):
         delta_r = 5
         curr_x = ball.get_x()
@@ -140,7 +138,6 @@ class State:
     def extract_features(self, agent):
         return self.generate_wall_rays(agent)
 
->>>>>>> Stashed changes
 
     def get_reward(self, agent, state):
         return
