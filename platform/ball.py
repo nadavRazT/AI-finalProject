@@ -19,6 +19,11 @@ class Ball:
         self.to_kill = False
         self.shooting_tank = tank
 
+    def check_exploded(self):
+        time_cur = time.time()
+        if time_cur - self.__time > BALL_LIFE:
+            self.to_kill = True
+
     def go(self, value, display):
 
         x = int(self.__xPos)
