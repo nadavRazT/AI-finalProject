@@ -63,8 +63,11 @@ class State:
                 if check_boom(ball, tank) and tank.get_exist() and not ball.to_kill:
                     display.play_sound(EXPLOSION_SOUND)
                     tank.destroy()
-
-                    ball.get_tank().update_kills()
+                    if tank.get_team() == ball.get_tank().get_team():
+                        ball.get_tank().num_kills_round -= 1
+                        ball.get_tank().num_kills += 1
+                    else:
+                        ball.get_tank().update_kills()
                     for shooting_tank in self.tank_list:
                         shooting_tank.poping_ball(ball)
 
@@ -130,15 +133,16 @@ class State:
         curr_x = ball.get_x()
         curr_y = ball.get_y()
         curr_angle = math.pi * ball.get_angle() / 180
+        count = 0
         while 0 < curr_x < WIDTH and 0 < curr_y < HEIGHT:
             dist_to_tank = np.sqrt((curr_x - tank.get_x()) ** 2 + (curr_y - tank.get_y()) ** 2)
             if dist_to_tank < TANK_RADIUS:
-                return False
+                return count
             if self.display.wall_collision((int(curr_x), int(curr_y))):
-                return True
+                count += 1
             curr_x -= delta_r * math.cos(curr_angle)
             curr_y += delta_r * math.sin(curr_angle)
-        return False
+        return count
 
     def extract_features(self, agent):
         wall_ray = self.generate_wall_rays(agent)
@@ -174,6 +178,8 @@ class State:
         # check enemy distance
         dist_enemy_reward = 0
         dist_friend_reward = 0
+        walls_between_enemies = 0
+        WALLS_BETWEEN_ENEMIES_FACTOR = 10
         for tank in self.tank_list:
             if tank == agent:
                 continue
@@ -184,6 +190,8 @@ class State:
                     dist_friend_reward = TANK_RADIUS / dist
 
             if tank.get_team() != agent.get_team():
+                if self.check_walls_between(tank, agent):
+                    walls_between_enemies -= WALLS_BETWEEN_ENEMIES_FACTOR
                 if dist_enemy_reward < TANK_RADIUS / dist:
                     dist_enemy_reward = TANK_RADIUS / dist
 
@@ -209,15 +217,19 @@ class State:
         ball_angle = ball.get_angle() * np.pi / 180
         dist = np.sqrt(dx ** 2 + dy ** 2)
         hit_distance = np.abs(np.cos(ball_angle) * dy + np.sin(ball_angle) * dx)
-        threat_reward = (HEIGHT * TANK_RADIUS / (hit_distance * dist))
+        if hit_distance == 0 or dist == 0:
+            threat_reward = 0
+        else:
+            threat_reward = (HEIGHT * TANK_RADIUS / (hit_distance * dist))
         walls_flag = False
-        if self.check_walls_between(tank, ball):
+        if self.check_walls_between(tank, ball) > 0:
             threat_reward /= dist
             walls_flag = True
-
+        TEAM_THREAT_FACTOR = -100
         if tank.get_team() == team:
-            threat_reward *= -1
-            if walls_flag: threat_reward = 0
+            threat_reward *= TEAM_THREAT_FACTOR
+            if walls_flag:
+                threat_reward = 0
         return threat_reward
 
     def get_tank_cone(self, agent):
@@ -281,7 +293,7 @@ class State:
             dist = np.sqrt(dx ** 2 + dy ** 2)
             angle_abs = np.arctan2(dy, - dx) % (2 * np.pi)
             hit_distance = np.abs(np.cos(ball_angle) * dy + np.sin(ball_angle) * dx)
-            if not hit_distance < 4 * TANK_RADIUS or self.check_walls_between(agent, ball):
+            if not hit_distance < 4 * TANK_RADIUS or self.check_walls_between(agent, ball) > 0:
                 continue
             cone_index = np.where(cone_rays > angle_abs)[0][0]
             ball_boolean_list[cone_index] += 1

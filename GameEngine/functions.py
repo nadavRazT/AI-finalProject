@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from GameEngine.game_setting import *
 
@@ -71,8 +73,11 @@ def reducer(accumulator, element):
 
 def get_team_positions(teams):
     locations = []
+    start_pos = random.sample(TEAM_START_POSITIONS, k=len(teams))
+    j = 0
     for color, n_players in teams.items():
-        team_pos = TEAM_START_POSITIONS[color]
+        team_pos = start_pos[j]
+        j += 1
         for i in range(n_players):
             locations.append((team_pos[0] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2,
                               team_pos[1] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2))

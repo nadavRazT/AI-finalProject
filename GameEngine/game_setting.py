@@ -46,10 +46,10 @@ MAZE = pygame.image.load("GameEngine/maps/map00.jpg")
 TANK_SCATTER_INDEX = 50
 OFFSET_p = HEIGHT - TANK_SCATTER_INDEX - 2 * TANK_RADIUS
 OFFSET_m = TANK_SCATTER_INDEX - 2 * TANK_RADIUS
-TEAM_START_POSITIONS = {"Red": (OFFSET_m + 50, OFFSET_m + 50),
-                        "Green": (OFFSET_m + 50, OFFSET_p ),
-                        "Blue": (OFFSET_p + 50, OFFSET_m - 50),
-                        "Yellow": (OFFSET_p, OFFSET_p)}
+TEAM_START_POSITIONS = [(OFFSET_m + 50, OFFSET_m + 50),
+                       (OFFSET_m + 50, OFFSET_p ),
+                        (OFFSET_p + 50, OFFSET_m + 50 ),
+                         (OFFSET_p - 20, OFFSET_p - 20)]
 
 TANK_POSSIBLE_POSITIONS = ((50, 50),
                            (390, 125),

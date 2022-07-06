@@ -1,8 +1,11 @@
+import random
+
 from GameEngine.state import State, Action
 from GameEngine.display import Display
 import pygame
 from GameEngine.game_setting import *
 from GameEngine.functions import reducer
+from GameEngine.functions import get_team_positions
 from functools import reduce
 
 class Game:
@@ -12,6 +15,7 @@ class Game:
 
     def __init__(self, agents, display, map_index, n_teams, n_rounds):
         pygame.init()
+        self.n_teams = n_teams
         self.agents = agents
         self.display = Display(display, map_index, n_teams)
         self.init_state = State(agents, self.display)
@@ -68,9 +72,18 @@ class Game:
 
 
     def reset_game(self):
+        start_pos = random.sample(TEAM_START_POSITIONS, k=self.n_teams)
+
         # reset tanks
+        cur_team = self.agents[0].get_team()
+        prev_team = self.agents[0].get_team()
+        i = 0
         for tank in self.agents:
-            tank.reset_tank()
+            cur_team = tank.get_team()
+            if cur_team != prev_team:
+                i += 1
+            tank.reset_tank(start_pos[i])
+            prev_team = cur_team
         # reset balls
         self.state = self.init_state
         self.display.update(self.state)

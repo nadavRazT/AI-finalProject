@@ -35,9 +35,9 @@ class ATank:
     def __str__(self):
         return self.color
 
-    def reset_tank(self):
-        self.__xPos = self.__i_xpos + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2
-        self.__yPos = self.__i_ypos + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2
+    def reset_tank(self, i_pos):
+        self.__xPos = i_pos[0] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2
+        self.__yPos = i_pos[1] + random.randint(-TANK_SCATTER_INDEX, TANK_SCATTER_INDEX) // 2
         self.reset_balls()
         self.__image = self.__orgImage
         self.is_exist =1
@@ -208,8 +208,8 @@ class ATank:
             actions.append(Action(self, ActionType.RIGHT))
         if keyboard.is_pressed(self.__controls[0]):
             actions.append(Action(self, ActionType.FORWARD))
-        if keyboard.is_pressed(self.__controls[1]):
-            actions.append(Action(self, ActionType.BACKWARD))
+        # if keyboard.is_pressed(self.__controls[1]):
+        #     actions.append(Action(self, ActionType.BACKWARD))
         if keyboard.is_pressed(self.__controls[4]) and self.is_released:
             actions.append(Action(self, ActionType.SHOOT))
             self.is_released = False

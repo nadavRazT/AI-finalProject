@@ -8,19 +8,19 @@ from GameEngine.tank import TankFactory
 from GameEngine.game import Game
 from GameEngine.state import ActionType, Action, State
 from tqdm import tqdm
-
+import pygame
+import sys
 GAMMA = 0.99
 BATCH_SIZE = 32
 BUFFER_SIZE = 50000
-MIN_REPLAY_SIZE = 1000
+MIN_REPLAY_SIZE = 500
 EPSILON_START = 1.0
 EPSILON_END = 0.02
 EPSILON_DECAY = 30000
-TARGET_UPDATE_FREQ = 1000
+TARGET_UPDATE_FREQ = 100
 INPUT_STATE_FEATURES = 0
 LEARNING_RATE = 5e-4
 out_features = 5
-MAP= 0
 
 
 class Network(nn.Module):
@@ -47,10 +47,11 @@ replay_buffer = deque(maxlen=BUFFER_SIZE)
 
 # initialize environment
 def init_env(dis):
-    teams = {"Red": 3, "Green": 3}
+    teams = {"Red": 1, "Green": 1}
     TF = TankFactory(0, teams)
     tank_list = TF.get_tanks()
-    game = Game(tank_list, display=dis, map_index=MAP, n_teams=2, n_rounds=1)
+    map = random.choice([0, 4, 5, 6])
+    game = Game(tank_list, display=dis, map_index=map, n_teams=2, n_rounds=1)
     game.reset_game()
     state = game.state
     return state, game, tank_list
@@ -67,6 +68,10 @@ optimizer = torch.optim.Adam(online_net.parameters(), lr=LEARNING_RATE)
 cur_step = 0
 # initialize replay buffer
 for i in tqdm(range(MIN_REPLAY_SIZE)):
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
     actions = []
     pre_tank = []
     actions_i = []
@@ -104,6 +109,10 @@ for i in tqdm(range(MIN_REPLAY_SIZE)):
 
 cur_step = 0
 for step in itertools.count():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
     epsilon = np.interp(step, [0, EPSILON_DECAY], [EPSILON_START, EPSILON_END])
     actions_i = []
     actions = []
@@ -174,7 +183,7 @@ for step in itertools.count():
     optimizer.step()
 
 
-    if step % (1000) == 0:
+    if step % (TARGET_UPDATE_FREQ) == 0:
         cur_step = step
         dis = game.display.is_display
         game.display.change_display(not dis)
