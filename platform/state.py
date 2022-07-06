@@ -6,14 +6,16 @@ from game_setting import *
 from tank import *
 from functions import *
 
+INFINITY = 1e5
+
 
 class ActionType(Enum):
     FORWARD = 0
-    BACKWARD = 1
-    RIGHT = 2
-    LEFT = 3
-    SHOOT = 4
-    STAY = 5
+    # BACKWARD = 1
+    RIGHT = 1
+    LEFT = 2
+    SHOOT = 3
+    STAY = 4
 
 
 class Action:
@@ -37,8 +39,8 @@ class State:
                 continue
             if action.action_type == ActionType.FORWARD:
                 action.agent.go(MOVEMENT_DEGREE, display)
-            if action.action_type == ActionType.BACKWARD:
-                action.agent.go(-1 * MOVEMENT_DEGREE, display)
+            # if action.action_type == ActionType.BACKWARD:
+            #     action.agent.go(-1 * MOVEMENT_DEGREE, display)
             if action.action_type == ActionType.RIGHT:
                 action.agent.rotate(-1 * ROTATION_DEGREE)
             if action.action_type == ActionType.LEFT:
@@ -155,6 +157,7 @@ class State:
         ball_dist_list = HEIGHT / np.array(ball_dist_list)
         danger_factor = -np.sum(ball_dist_list)
 
+
         # check kills
         threat_reward = 0
         tank_ball_list = agent.get_balls()
@@ -184,6 +187,7 @@ class State:
                 if dist_enemy_reward < TANK_RADIUS / dist:
                     dist_enemy_reward = TANK_RADIUS / dist
 
+        #
         # if(dist_enemy_reward != 0):
         #     print(f"\n=========\nAGENT: {agent.color}\n"
         #       f" threat_reward: {threat_reward}\n:"
@@ -217,12 +221,11 @@ class State:
         return threat_reward
 
     def get_tank_cone(self, agent):
-
         tank_list = self.get_tanks()
         cone_rays = np.linspace(0, 2 * np.pi, NUM_OF_CONES - 1)
-        enemy_list = np.ones(NUM_OF_CONES) * np.inf
+        enemy_list = np.ones(NUM_OF_CONES) * INFINITY
         enemy_boolean_list = np.zeros(NUM_OF_CONES)
-        team_list = np.ones(NUM_OF_CONES) * np.inf
+        team_list = np.ones(NUM_OF_CONES) * INFINITY
         team_boolean_list = np.zeros(NUM_OF_CONES)
         for tank in tank_list:
             if tank == agent:
@@ -264,7 +267,7 @@ class State:
         ball_list = self.get_ball_list()
 
         cone_rays = np.linspace(0, 2 * np.pi, NUM_OF_CONES - 1)
-        ball_hit_list = np.ones(NUM_OF_CONES) * np.inf
+        ball_hit_list = np.ones(NUM_OF_CONES) * INFINITY
         ball_boolean_list = np.zeros(NUM_OF_CONES)
 
         for ball in ball_list:
