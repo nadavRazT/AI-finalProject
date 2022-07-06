@@ -31,6 +31,7 @@ class Network(nn.Module):
                                  nn.Tanh(),
                                  nn.Linear(50, out_features))
 
+
     def forward(self, x):
         return self.net(x)
 
@@ -50,7 +51,7 @@ def init_env(dis):
     teams = {"Red": 1, "Green": 1}
     TF = TankFactory(0, teams)
     tank_list = TF.get_tanks()
-    map = random.choice([0, 4, 5, 6])
+    map = random.choice([0, 5, 6])
     game = Game(tank_list, display=dis, map_index=map, n_teams=2, n_rounds=1)
     game.reset_game()
     state = game.state
@@ -64,7 +65,7 @@ target_net = Network()
 
 target_net.load_state_dict(online_net.state_dict())
 
-optimizer = torch.optim.Adam(online_net.parameters(), lr=LEARNING_RATE)
+optimizer = torch.optim.SGD(online_net.parameters(), lr=LEARNING_RATE)
 cur_step = 0
 # initialize replay buffer
 for i in tqdm(range(MIN_REPLAY_SIZE)):
@@ -177,12 +178,11 @@ for step in itertools.count():
     q_values = online_net(states_t)
     action_q_values = torch.gather(input=q_values, dim=1, index=actions_t)
     loss = nn.functional.smooth_l1_loss(action_q_values, targets)
-
-    optimizer.zero_grad()
+    a = list(online_net.net.parameters())[2]
     loss.backward()
     optimizer.step()
-
-
+    b = list(online_net.net.parameters())[2]
+    print(f"STEP: {step}, {len(np.where((a.data - b.data) != 0))}")
     if step % (TARGET_UPDATE_FREQ) == 0:
         cur_step = step
         dis = game.display.is_display
@@ -193,8 +193,7 @@ for step in itertools.count():
         state, game, tank_list = init_env(game.display.is_display)
 
         print()
-        print("Step", step)
+        print("Ste  p", step)
         for i in range(len(tank_list)):
             print(f"Avg Rew {i}", np.mean(rew_buffer[i]))
-    if step == 1500:
-        break
+

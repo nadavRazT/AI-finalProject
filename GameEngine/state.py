@@ -100,16 +100,18 @@ class State:
     def generate_wall_rays(self, agent):
         ret = []
         delta_angle = 12 * math.pi / 180
-        delta_r = 6
-        for i in range(int(2 * math.pi / delta_angle)):
+        delta_r = 10
+        for i in range(int(2 * np.pi / delta_angle)):
             curr_x = agent.get_x()
             curr_y = agent.get_y()
             curr_angle = agent.get_angle() * math.pi / 180 + i * delta_angle
+            sin = np.sin(curr_angle)
+            cos = np.cos(curr_angle)
             while (curr_x > 0 and curr_x < WIDTH and curr_y > 0 and curr_y < HEIGHT):
                 if self.display.wall_collision((int(curr_x), int(curr_y))):
                     break
-                curr_x -= delta_r * math.cos(curr_angle)
-                curr_y += delta_r * math.sin(curr_angle)
+                curr_x -= delta_r * cos
+                curr_y += delta_r * sin
             curr_x = min(max(curr_x, 0), WIDTH)
             curr_y = min(max(curr_y, 0), HEIGHT)
             distance = math.sqrt((curr_x - agent.get_x()) ** 2 + (curr_y - agent.get_y()) ** 2)
