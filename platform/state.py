@@ -11,11 +11,11 @@ INFINITY = 1e5
 
 class ActionType(Enum):
     FORWARD = 0
-    BACKWARD = 1
-    RIGHT = 2
-    LEFT = 3
-    SHOOT = 4
-    STAY = 5
+    # BACKWARD = 1
+    RIGHT = 1
+    LEFT = 2
+    SHOOT = 3
+    STAY = 4
 
 
 class Action:
@@ -39,8 +39,8 @@ class State:
                 continue
             if action.action_type == ActionType.FORWARD:
                 action.agent.go(MOVEMENT_DEGREE, display)
-            if action.action_type == ActionType.BACKWARD:
-                action.agent.go(-1 * MOVEMENT_DEGREE, display)
+            # if action.action_type == ActionType.BACKWARD:
+            #     action.agent.go(-1 * MOVEMENT_DEGREE, display)
             if action.action_type == ActionType.RIGHT:
                 action.agent.rotate(-1 * ROTATION_DEGREE)
             if action.action_type == ActionType.LEFT:
@@ -185,13 +185,13 @@ class State:
             if tank.get_team() != agent.get_team():
                 if dist_enemy_reward < TANK_RADIUS / dist:
                     dist_enemy_reward = TANK_RADIUS / dist
-
-        if(dist_enemy_reward != 0):
-            print(f"\n=========\nAGENT: {agent.color}\n"
-              f" threat_reward: {threat_reward}\n:"
-              f"danger_factor: {danger_factor}\n"
-              f"dist_enemy_reward:{dist_enemy_reward}\n"
-              f"dist_friend_reward: {dist_friend_reward}\n")
+        #
+        # if(dist_enemy_reward != 0):
+        #     print(f"\n=========\nAGENT: {agent.color}\n"
+        #       f" threat_reward: {threat_reward}\n:"
+        #       f"danger_factor: {danger_factor}\n"
+        #       f"dist_enemy_reward:{dist_enemy_reward}\n"
+        #       f"dist_friend_reward: {dist_friend_reward}\n")
         return threat_reward + danger_factor + dist_enemy_reward + dist_friend_reward
 
     def get_dist(self, obj1, obj2):

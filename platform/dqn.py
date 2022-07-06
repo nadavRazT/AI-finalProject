@@ -19,13 +19,13 @@ EPSILON_DECAY = 30000
 TARGET_UPDATE_FREQ = 1000
 INPUT_STATE_FEATURES = 0
 LEARNING_RATE = 5e-4
+out_features = 5
 
 
 class Network(nn.Module):
     def __init__(self):
         super().__init__()
         in_features = 120
-        out_features = 6
         self.net = nn.Sequential(nn.Linear(in_features, 120),
                                  nn.Tanh(),
                                  nn.Linear(120, 50),
@@ -50,7 +50,7 @@ rew_buffer_2 = deque([0.0], maxlen=100)
 
 # initialize environment
 def init_env():
-    teams = {"Red": 1, "Green": 1}
+    teams = {"Red": 3, "Green": 3}
     TF = TankFactory(0, teams)
     tank_list = TF.get_tanks()
     game = Game(tank_list, display=True, map_index=0, n_teams=2, n_rounds=1)
@@ -73,11 +73,11 @@ optimizer = torch.optim.Adam(online_net.parameters(), lr=LEARNING_RATE)
 
 # initialize replay buffer
 for i in tqdm(range(MIN_REPLAY_SIZE)):
-    action1 = random.randrange(6)
-    action1obj = Action(tank_list[0], ActionType(action1))
-    action2 = random.randrange(6)
-    action2obj = Action(tank_list[1], ActionType(action2))
-    actions = [action1obj, action2obj]
+    actions = []
+    for j in len(tank_list):
+        action = random.randrange(out_features)
+        actionobj = Action(tank_list[j], ActionType(action))
+        actions += [actionobj]
 
     pre_tank1 = state.extract_features(tank_list[0])
     pre_tank2 = state.extract_features(tank_list[1])
@@ -106,14 +106,14 @@ for step in itertools.count():
     rnd2 = random.random()
 
     if rnd1 < epsilon:
-        action1 = random.randrange(6)
+        action1 = random.randrange(out_features)
         action1obj = Action(tank_list[0], ActionType(action1))
     else:
         action1 = online_net.act(state.extract_features(tank_list[0]))
         action1obj = Action(tank_list[0], ActionType(action1))
 
     if rnd2 < epsilon:
-        action2 = random.randrange(6)
+        action2 = random.randrange(out_features)
         action2obj = Action(tank_list[1], ActionType(action2))
     else:
         action2 = online_net.act(state.extract_features(tank_list[1]))

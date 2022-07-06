@@ -36,11 +36,7 @@ class Game:
                     sys.exit()
 
             agent = self.agents[agentIndex]
-<<<<<<< Updated upstream
-            self.state.get_reward(agent)
 
-=======
->>>>>>> Stashed changes
             action = agent.get_action(self.state)
             self.state.get_ball_cone(agent)
             if action:
