@@ -2,9 +2,9 @@ from enum import Enum
 import math
 import numpy as np
 import pygame
-from game_setting import *
-from tank import *
-from functions import *
+from GameEngine.game_setting import *
+from GameEngine.tank import *
+from GameEngine.functions import *
 
 INFINITY = 1e5
 

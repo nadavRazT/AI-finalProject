@@ -1,18 +1,27 @@
 import pygame
-from game_setting import *
-from functions import get_color
+from GameEngine.game_setting import *
+from GameEngine.functions import get_color
 
 class Display:
     def __init__(self, display, map_index, n_teams):
         self.is_display = display
         self.n_teams = n_teams
         self.map_image = self.reset_map(map_index)
-
         if display:
-            pygame.mixer.init()
-            self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-            pygame.display.set_caption(GAME_TITLE)
-            self.clock = pygame.time.Clock()
+            self.reset_display()
+
+    def reset_display(self):
+        pygame.mixer.init()
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption(GAME_TITLE)
+        self.clock = pygame.time.Clock()
+
+    def change_display(self, display):
+            self.is_display = display
+            if display:
+                self.reset_display()
+            else:
+                pygame.display.quit()
 
     def draw_text(self, surf, text, color, size, location):
         ## selecting a cross platform font to display the score

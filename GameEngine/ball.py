@@ -1,5 +1,5 @@
-from game_setting import HEIGHT, WIDTH
-from functions import *
+from GameEngine.game_setting import HEIGHT, WIDTH
+from GameEngine.functions import *
 
 
 class Ball:

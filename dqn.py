@@ -4,9 +4,9 @@ from collections import deque
 import itertools
 import numpy as np
 import random
-from tank import TankFactory
-from game import Game
-from state import ActionType, Action, State
+from GameEngine.tank import TankFactory
+from GameEngine.game import Game
+from GameEngine.state import ActionType, Action, State
 from tqdm import tqdm
 
 GAMMA = 0.99
@@ -20,16 +20,15 @@ TARGET_UPDATE_FREQ = 1000
 INPUT_STATE_FEATURES = 0
 LEARNING_RATE = 5e-4
 out_features = 5
+MAP= 0
 
 
 class Network(nn.Module):
     def __init__(self):
         super().__init__()
         in_features = 120
-        self.net = nn.Sequential(nn.Linear(in_features, 120),
+        self.net = nn.Sequential(nn.Linear(in_features, 50),
                                  nn.Tanh(),
-                                 nn.Linear(120, 50),
-                                 nn.ReLU(),
                                  nn.Linear(50, out_features))
 
     def forward(self, x):
@@ -44,25 +43,20 @@ class Network(nn.Module):
 
 
 replay_buffer = deque(maxlen=BUFFER_SIZE)
-rew_buffer_1 = deque([0.0], maxlen=100)
-rew_buffer_2 = deque([0.0], maxlen=100)
 
 
 # initialize environment
-def init_env():
+def init_env(dis):
     teams = {"Red": 3, "Green": 3}
     TF = TankFactory(0, teams)
     tank_list = TF.get_tanks()
-    game = Game(tank_list, display=True, map_index=0, n_teams=2, n_rounds=1)
+    game = Game(tank_list, display=dis, map_index=MAP, n_teams=2, n_rounds=1)
     game.reset_game()
     state = game.state
     return state, game, tank_list
 
 
-state, game, tank_list = init_env()
-
-episode_reward_1 = 0.0
-episode_reward_2 = 0.0
+state, game, tank_list = init_env(False)
 
 online_net = Network()
 target_net = Network()
@@ -70,82 +64,85 @@ target_net = Network()
 target_net.load_state_dict(online_net.state_dict())
 
 optimizer = torch.optim.Adam(online_net.parameters(), lr=LEARNING_RATE)
-
+cur_step = 0
 # initialize replay buffer
 for i in tqdm(range(MIN_REPLAY_SIZE)):
     actions = []
-    for j in len(tank_list):
-        action = random.randrange(out_features)
-        actionobj = Action(tank_list[j], ActionType(action))
-        actions += [actionobj]
+    pre_tank = []
+    actions_i = []
+    for j in range(len(tank_list)):
+        action_i = random.randrange(out_features)
+        actions_i.append(action_i)
+        actionobj = Action(tank_list[j], ActionType(action_i))
+        actions.append(actionobj)
+        pre_tank += [state.extract_features(tank_list[j])]
 
-    pre_tank1 = state.extract_features(tank_list[0])
-    pre_tank2 = state.extract_features(tank_list[1])
     next_state = state.generate_successor(actions, game.display)
-    post_tank1 = next_state.extract_features(tank_list[0])
-    post_tank2 = next_state.extract_features(tank_list[1])
-    rew1 = next_state.get_reward(tank_list[0])
-    rew2 = next_state.get_reward(tank_list[1])
+
     done = next_state.is_terminal()
-    transition1 = (pre_tank1, action1, rew1, done, post_tank1)
-    transition2 = (pre_tank2, action2, rew2, done, post_tank2)
-    replay_buffer.append(transition1)
-    replay_buffer.append(transition2)
+
+    rew = []
+    for j in range(len(tank_list)):
+        post_tank = next_state.extract_features(tank_list[j])
+        rew = next_state.get_reward(tank_list[j])
+        transition = (pre_tank[j], actions_i[j], rew, done, post_tank)
+        replay_buffer.append(transition)
 
     game.display.update(state)
 
     state = next_state
 
     if done:
-        state, game, tank_list = init_env()
+        state, game, tank_list = init_env(game.display.is_display)
 
+    # if i % (100) == 0:
+    #     cur_step = i
+    #     dis = game.display.is_display
+    #     dis = not dis
+    #     game.display.change_display(dis)
+
+
+cur_step = 0
 for step in itertools.count():
     epsilon = np.interp(step, [0, EPSILON_DECAY], [EPSILON_START, EPSILON_END])
+    actions_i = []
+    actions = []
+    pre_tank = []
+    for j in range(len(tank_list)):
+        rnd = random.random()
 
-    rnd1 = random.random()
-    rnd2 = random.random()
+        if rnd < epsilon:
+            action_i = random.randrange(out_features)
+            actionobj = Action(tank_list[j], ActionType(action_i))
+        else:
+            action_i = online_net.act(state.extract_features(tank_list[j]))
+            actionobj = Action(tank_list[0], ActionType(action_i))
+        actions.append(actionobj)
+        actions_i.append(action_i)
+        pre_tank.append(state.extract_features(tank_list[j]))
 
-    if rnd1 < epsilon:
-        action1 = random.randrange(out_features)
-        action1obj = Action(tank_list[0], ActionType(action1))
-    else:
-        action1 = online_net.act(state.extract_features(tank_list[0]))
-        action1obj = Action(tank_list[0], ActionType(action1))
 
-    if rnd2 < epsilon:
-        action2 = random.randrange(out_features)
-        action2obj = Action(tank_list[1], ActionType(action2))
-    else:
-        action2 = online_net.act(state.extract_features(tank_list[1]))
-        action2obj = Action(tank_list[1], ActionType(action2))
-
-    actions = [action1obj, action2obj]
-
-    pre_tank1 = state.extract_features(tank_list[0])
-    pre_tank2 = state.extract_features(tank_list[1])
     next_state = state.generate_successor(actions, game.display)
-    post_tank1 = next_state.extract_features(tank_list[0])
-    post_tank2 = next_state.extract_features(tank_list[1])
-    rew1 = next_state.get_reward(tank_list[0])
-    rew2 = next_state.get_reward(tank_list[1])
     done = next_state.is_terminal()
 
-    transition1 = (pre_tank1, action1, rew1, done, post_tank1)
-    transition2 = (pre_tank2, action2, rew2, done, post_tank2)
-    replay_buffer.append(transition1)
-    replay_buffer.append(transition2)
+    rew = []
+    episode_reward = np.zeros(len(tank_list))
+    for j in range(len(tank_list)):
+        post_tank = next_state.extract_features(tank_list[j])
+        rew = next_state.get_reward(tank_list[j])
+        transition = (pre_tank[j], actions_i[j], rew, done, post_tank)
+        replay_buffer.append(transition)
+        episode_reward[j] += rew
+
 
     game.display.update(state)
 
     state = next_state
-
-    episode_reward_1 += rew1
-    episode_reward_2 += rew2
-
+    rew_buffer = [[] for i in range(len(tank_list))]
     if done:
-        state, game, tank_list = init_env()
-        rew_buffer_1.append(episode_reward_1)
-        rew_buffer_2.append(episode_reward_2)
+        state, game, tank_list = init_env(game.display.is_display)
+    for j in range(len(tank_list)):
+        rew_buffer[j].append(episode_reward[j])
 
     transitions = random.sample(replay_buffer, BATCH_SIZE)
 
@@ -176,9 +173,15 @@ for step in itertools.count():
     loss.backward()
     optimizer.step()
 
+
+    if step % (1000) == 0:
+        cur_step = step
+        dis = game.display.is_display
+        game.display.change_display(not dis)
+
     if step % TARGET_UPDATE_FREQ == 0:
         target_net.load_state_dict(online_net.state_dict())
         print()
         print("Step", step)
-        print("Avg Rew 1", np.mean(rew_buffer_1))
-        print("Avg Rew 2", np.mean(rew_buffer_2))
+        for i in range(len(tank_list)):
+            print(f"Avg Rew {i}", np.mean(rew_buffer[i]))

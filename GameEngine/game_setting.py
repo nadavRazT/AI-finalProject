@@ -15,7 +15,7 @@ import os
 #################
 # Game Settings #
 #################
-VOLUME = 0.1
+VOLUME = 0
 WIDTH_ORIG, HEIGHT_ORIG = 1171, 700
 WIDTH, HEIGHT = 1004, 600
 GAME_OVER_TIME = 2
@@ -26,7 +26,7 @@ GAME_TITLE = "Alter Tank"
 ARC_ANGLE = 22.5 * (math.pi / 180)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-BALL_LIFE = 0.5
+BALL_LIFE = 10
 BALL_COUNT = 2
 TANK_SIZE_FACTOR = 1
 BALL_RADIUS = int(5 // TANK_SIZE_FACTOR)
@@ -40,9 +40,9 @@ NUM_OF_CONES = 30
 NUMBER_OF_MAP = 1
 NUMBER_OF_POSITIONS = 7
 MAP_NUMBER = random.randint(1, NUMBER_OF_MAP)
-MAZE_TEXT = 'maps/map0{0}.jpg'
+MAZE_TEXT = 'GameEngine/maps/map0{0}.jpg'
 MAZE = pygame.image.load(MAZE_TEXT.format(str(MAP_NUMBER)))
-MAZE = pygame.image.load("maps/map00.jpg")
+MAZE = pygame.image.load("GameEngine/maps/map00.jpg")
 TANK_SCATTER_INDEX = 50
 OFFSET_p = HEIGHT - TANK_SCATTER_INDEX - 2 * TANK_RADIUS
 OFFSET_m = TANK_SCATTER_INDEX - 2 * TANK_RADIUS
@@ -59,25 +59,25 @@ TANK_POSSIBLE_POSITIONS = ((50, 50),
                            (210, 45),
                            (45, 315))
 
-START_MENU_IMG = pygame.image.load('img/START_MENU.png')
-HELP_3PLAYER = pygame.image.load('img/3player_help.png')
+START_MENU_IMG = pygame.image.load('GameEngine/img/START_MENU.png')
+HELP_3PLAYER = pygame.image.load('GameEngine/img/3player_help.png')
 
-HELP_2PLAYER = pygame.image.load('img/2player_help.png')
+HELP_2PLAYER = pygame.image.load('GameEngine/img/2player_help.png')
 
-IMG_TANK1 = pygame.image.load('img/tank1.png')
-IMG_TANK2 = pygame.image.load('img/tank2.png')
-IMG_TANK3 = pygame.image.load('img/tank3.png')
+IMG_TANK1 = pygame.image.load('GameEngine/img/tank1.png')
+IMG_TANK2 = pygame.image.load('GameEngine/img/tank2.png')
+IMG_TANK3 = pygame.image.load('GameEngine/img/tank3.png')
 
-SCORE_FRAME_2player = pygame.image.load('img/score_frame_2player.png')
-SCORE_FRAME_3player = pygame.image.load('img/score_frame_3player.png')
+SCORE_FRAME_2player = pygame.image.load('GameEngine/img/score_frame_2player.png')
+SCORE_FRAME_3player = pygame.image.load('GameEngine/img/score_frame_3player.png')
 
-IMG_EXPLOSION = pygame.image.load('img/explosion/explosion.png')
+IMG_EXPLOSION = pygame.image.load('GameEngine/img/explosion/explosion.png')
 
 ###############
 # Game Musics #
 ###############
 
-EXPLOSION_SOUND = 'musics/explosion.mp3'
+EXPLOSION_SOUND = 'GameEngine/musics/explosion.mp3'
 
 ####################
 # Game Controllers #

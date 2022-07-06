@@ -1,8 +1,8 @@
-from state import State, Action
-from display import Display
+from GameEngine.state import State, Action
+from GameEngine.display import Display
 import pygame
-from game_setting import *
-from functions import reducer
+from GameEngine.game_setting import *
+from GameEngine.functions import reducer
 from functools import reduce
 
 class Game:

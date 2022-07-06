@@ -1,6 +1,6 @@
-from ball import *
-from game_setting import *
-from state import Action, ActionType
+from GameEngine.ball import *
+from GameEngine.game_setting import *
+from GameEngine.state import Action, ActionType
 import numpy as np
 
 
