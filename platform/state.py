@@ -52,6 +52,7 @@ class State:
         for tank in self.tank_list:
             for ball in tank.get_balls():
                 ball.go(BALL_SPEED, display)
+                ball.check_exploded()
             tank.check_balls()
 
         # checking tank - ball collision
@@ -177,18 +178,18 @@ class State:
             dist = max(self.get_dist(tank, agent) / HEIGHT,1/10)
             if tank.get_team() == agent.get_team():
                 if dist_friend_reward < TANK_RADIUS / dist:
-                    dist_friend_reward = TANK_RADIUS / (dist)
+                    dist_friend_reward = TANK_RADIUS / dist
 
             if tank.get_team() != agent.get_team():
                 if dist_enemy_reward < TANK_RADIUS / dist:
                     dist_enemy_reward = TANK_RADIUS / dist
 
-        if(dist_enemy_reward != 0):
-            print(f"\n=========\nAGENT: {agent.color}\n"
-              f" threat_reward: {threat_reward}\n:"
-              f"danger_factor: {danger_factor}\n"
-              f"dist_enemy_reward:{dist_enemy_reward}\n"
-              f"dist_friend_reward: {dist_friend_reward}\n")
+        # if(dist_enemy_reward != 0):
+        #     print(f"\n=========\nAGENT: {agent.color}\n"
+        #       f" threat_reward: {threat_reward}\n:"
+        #       f"danger_factor: {danger_factor}\n"
+        #       f"dist_enemy_reward:{dist_enemy_reward}\n"
+        #       f"dist_friend_reward: {dist_friend_reward}\n")
         return threat_reward + danger_factor + dist_enemy_reward + dist_friend_reward
 
     def get_dist(self, obj1, obj2):
@@ -277,7 +278,7 @@ class State:
             dist = np.sqrt(dx ** 2 + dy ** 2)
             angle_abs = np.arctan2(dy, - dx) % (2 * np.pi)
             hit_distance = np.abs(np.cos(ball_angle) * dy + np.sin(ball_angle) * dx)
-            if not hit_distance < 2 * TANK_RADIUS or self.check_walls_between(agent, ball):
+            if not hit_distance < 4 * TANK_RADIUS or self.check_walls_between(agent, ball):
                 continue
             cone_index = np.where(cone_rays > angle_abs)[0][0]
             ball_boolean_list[cone_index] += 1
