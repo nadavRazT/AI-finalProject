@@ -13,11 +13,11 @@ import sys
 GAMMA = 0.99
 BATCH_SIZE = 32
 BUFFER_SIZE = 50000
-MIN_REPLAY_SIZE = 500
+MIN_REPLAY_SIZE = 1000
 EPSILON_START = 1.0
 EPSILON_END = 0.02
 EPSILON_DECAY = 30000
-TARGET_UPDATE_FREQ = 100
+TARGET_UPDATE_FREQ = 1000
 INPUT_STATE_FEATURES = 0
 LEARNING_RATE = 5e-4
 out_features = 5
@@ -190,7 +190,11 @@ for step in itertools.count():
 
     if step % TARGET_UPDATE_FREQ == 0:
         target_net.load_state_dict(online_net.state_dict())
+        state, game, tank_list = init_env(game.display.is_display)
+
         print()
         print("Step", step)
         for i in range(len(tank_list)):
             print(f"Avg Rew {i}", np.mean(rew_buffer[i]))
+    if step == 1500:
+        break
