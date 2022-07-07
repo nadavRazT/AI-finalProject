@@ -6,7 +6,8 @@ from GameEngine.game_setting import *
 from GameEngine.tank import *
 from GameEngine.functions import *
 
-INFINITY = 1e5
+INFINITY = -1
+DIAG = np.sqrt(2) * HEIGHT
 
 
 class ActionType(Enum):
@@ -135,6 +136,8 @@ class State:
         curr_x = ball.get_x()
         curr_y = ball.get_y()
         curr_angle = math.pi * ball.get_angle() / 180
+        cos = np.cos(curr_angle)
+        sin = np.sin(curr_angle)
         count = 0
         while 0 < curr_x < WIDTH and 0 < curr_y < HEIGHT:
             dist_to_tank = np.sqrt((curr_x - tank.get_x()) ** 2 + (curr_y - tank.get_y()) ** 2)
@@ -142,14 +145,16 @@ class State:
                 return count
             if self.display.wall_collision((int(curr_x), int(curr_y))):
                 count += 1
-            curr_x -= delta_r * math.cos(curr_angle)
-            curr_y += delta_r * math.sin(curr_angle)
+            curr_x -= delta_r * cos
+            curr_y += delta_r * sin
         return count
 
     def extract_features(self, agent):
-        wall_ray = self.generate_wall_rays(agent)
+        wall_ray = self.generate_wall_rays(agent) / DIAG
+
         team_list, team_boolean_list, enemy_list, enemy_boolean_list = self.get_tank_cone(agent)
         ball_dist_list, ball_boolean_list = self.get_ball_cone(agent)
+
         return np.concatenate([wall_ray,
                                team_list,
                                enemy_list,
@@ -160,7 +165,6 @@ class State:
         # check danger
         DANGER_FACTOR = 5
         ball_dist_list, ball_boolean_list = self.get_ball_cone(agent)
-        ball_dist_list = HEIGHT / np.array(ball_dist_list)
         danger_factor = -np.sum(ball_dist_list)
 
 
@@ -181,24 +185,24 @@ class State:
         dist_enemy_reward = 0
         dist_friend_reward = 0
         walls_between_enemies = 0
-        WALLS_BETWEEN_ENEMIES_FACTOR = 10
+        WALLS_BETWEEN_ENEMIES_FACTOR = 1
         for tank in self.tank_list:
             if tank == agent:
                 continue
 
-            dist = max(self.get_dist(tank, agent) / HEIGHT,1/10)
+            eff_dist = (DIAG - self.get_dist(tank, agent)) / DIAG
             if tank.get_team() == agent.get_team():
-                if dist_friend_reward < TANK_RADIUS / dist:
-                    dist_friend_reward = TANK_RADIUS / dist
+                if dist_friend_reward < eff_dist:
+                    dist_friend_reward = eff_dist
 
             if tank.get_team() != agent.get_team():
                 if self.check_walls_between(tank, agent):
                     walls_between_enemies -= WALLS_BETWEEN_ENEMIES_FACTOR
-                if dist_enemy_reward < TANK_RADIUS / dist:
-                    dist_enemy_reward = TANK_RADIUS / dist
+                if dist_enemy_reward < eff_dist:
+                    dist_enemy_reward = eff_dist
 
         #
-        # if(dist_enemy_reward != 0):
+        # if(threat_reward != 0):
         #     print(f"\n=========\nAGENT: {agent.color}\n"
         #       f" threat_reward: {threat_reward}\n:"
         #       f"danger_factor: {danger_factor}\n"
@@ -222,12 +226,12 @@ class State:
         if hit_distance == 0 or dist == 0:
             threat_reward = 0
         else:
-            threat_reward = (HEIGHT * TANK_RADIUS / (hit_distance * dist))
+            threat_reward = (DIAG - dist) / max(TANK_RADIUS, hit_distance)
         walls_flag = False
         if self.check_walls_between(tank, ball) > 0:
             threat_reward /= dist
             walls_flag = True
-        TEAM_THREAT_FACTOR = -100
+        TEAM_THREAT_FACTOR = -10
         if tank.get_team() == team:
             threat_reward *= TEAM_THREAT_FACTOR
             if walls_flag:
@@ -237,9 +241,9 @@ class State:
     def get_tank_cone(self, agent):
         tank_list = self.get_tanks()
         cone_rays = np.linspace(0, 2 * np.pi, NUM_OF_CONES - 1)
-        enemy_list = np.ones(NUM_OF_CONES) * INFINITY
+        enemy_list = np.zeros(NUM_OF_CONES)
         enemy_boolean_list = np.zeros(NUM_OF_CONES)
-        team_list = np.ones(NUM_OF_CONES) * INFINITY
+        team_list = np.zeros(NUM_OF_CONES)
         team_boolean_list = np.zeros(NUM_OF_CONES)
         for tank in tank_list:
             if tank == agent:
@@ -248,19 +252,19 @@ class State:
             y_pos = tank.get_y()
             dy = y_pos - agent.get_y()
             dx = x_pos - agent.get_x()
-
             dist = np.sqrt(dx ** 2 + dy ** 2)
             angle_abs = np.arctan2(dy, - dx) % (2 * np.pi)
             angle_rel = (angle_abs - np.pi * agent.get_angle() / 180) % (2 * np.pi)
             cone_index = np.where(cone_rays > angle_rel)[0][0]
+            cone_angle = cone_rays[cone_index]
             if tank.get_team() == agent.get_team():
                 team_boolean_list[cone_index] += 1
                 if team_list[cone_index] > dist:
-                    team_list[cone_index] = dist
+                    team_list[cone_index] = (DIAG - dist) / DIAG
             else:
                 enemy_boolean_list[cone_index] += 1
                 if enemy_list[cone_index] > dist or enemy_list[cone_index] == 0:
-                    enemy_list[cone_index] = dist
+                    enemy_list[cone_index] = (DIAG - dist) / DIAG
 
         return team_list, team_boolean_list, enemy_list, enemy_boolean_list
 
@@ -281,7 +285,7 @@ class State:
         ball_list = self.get_ball_list()
 
         cone_rays = np.linspace(0, 2 * np.pi, NUM_OF_CONES - 1)
-        ball_hit_list = np.ones(NUM_OF_CONES) * INFINITY
+        ball_hit_list = np.zeros(NUM_OF_CONES)
         ball_boolean_list = np.zeros(NUM_OF_CONES)
 
         for ball in ball_list:
@@ -299,7 +303,36 @@ class State:
                 continue
             cone_index = np.where(cone_rays > angle_abs)[0][0]
             ball_boolean_list[cone_index] += 1
-            if dist < ball_hit_list[cone_index]: ball_hit_list[cone_index] = ((hit_distance * dist) / HEIGHT * TANK_RADIUS)
-
-
+            eff_dist = (DIAG - dist) / DIAG
+            if eff_dist > ball_hit_list[cone_index]:
+                ball_hit_list[cone_index] = eff_dist
         return ball_hit_list, ball_boolean_list
+
+    def calc_dist_to_map_wall(self, agent, cone_angle):
+        CORNERS = [(0, 0), (WIDTH, 0), (WIDTH, HEIGHT), (0, HEIGHT)]
+        abs_angles = []
+        for corner in CORNERS:
+            dy = corner[1] - agent.get_y()
+            dx = corner[0] - agent.get_x()
+            angle_abs = np.arctan2(dy, - dx) % (2 * np.pi)
+            abs_angles.append(angle_abs % (2 * np.pi))
+        cone_abs_angle = (cone_angle + agent.get_angle() * np.pi / 180) % (2 * np.pi)
+        quarter = np.where(abs_angles < cone_abs_angle)
+        if len(quarter) == 0:
+            quarter = 3
+        else:
+            quarter = quarter[0]
+        if quarter == 0:
+            return np.abs(agent.get_y() / (np.sin(cone_abs_angle)))
+        if quarter == 1:
+            return np.abs((WIDTH - agent.get_x()) / np.cos(cone_abs_angle))
+        if quarter == 2:
+            return np.abs((HEIGHT - agent.get_y()) / (np.sin(cone_abs_angle)))
+        if quarter == 3:
+            return np.abs((agent.get_x()) / np.cos(cone_abs_angle))
+
+
+
+
+
+

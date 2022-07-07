@@ -7,6 +7,7 @@ from GameEngine.game_setting import *
 from GameEngine.functions import reducer
 from GameEngine.functions import get_team_positions
 from functools import reduce
+import numpy as np
 
 class Game:
     """
@@ -42,14 +43,22 @@ class Game:
             agent = self.agents[agentIndex]
 
             action = agent.get_action(self.state)
-            self.state.get_ball_cone(agent)
+
             if action:
                 action_list += action
             self.move_history.append(action)
             self.state = self.state.generate_successor(action_list, self.display)
-
+            if agent.color == "Red":
+                feat = self.state.get_reward(agent)
 
             action_list = []
+
+            # if agentIndex == 0:
+            #     print(agent.get_x())
+            #     arr = self.state.get_tank_cone(agent)
+            #     for i in range(len(arr[2])):
+            #         if arr[2][i] > 0:
+            #             print(i, arr[2][i], end=" ")
 
             if agentIndex == numAgents - 1:
                 ## track progress
